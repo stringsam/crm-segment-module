@@ -11,6 +11,8 @@ use Nette\Application\LinkGenerator;
 use Nette\Http\Response;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 class RelatedHandler extends ApiHandler
 {
@@ -70,7 +72,13 @@ class RelatedHandler extends ApiHandler
         $segments = $this->segmentsRepository->all()->where(['version' => 2, 'table_name' => $params['table_name']]);
         $result = [];
         foreach ($segments as $segment) {
-            $criteria = Json::decode($segment->criteria, Json::FORCE_ARRAY);
+            try {
+                $criteria = Json::decode($segment->criteria, Json::FORCE_ARRAY);
+            } catch (JsonException $e) {
+                Debugger::log("Invalid JSON structure in segment [{$segment->id}]", ILogger::ERROR);
+                continue;
+            }
+
             $segmentCriteria = $this->generator->extractCriteria($params['table_name'], $criteria);
 
             if ($this->isRelated($inputCriteria, $segmentCriteria)) {
