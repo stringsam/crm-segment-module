@@ -1,0 +1,57 @@
+menu:
+	segments: Segments
+	stored_segments: Saved segments
+segment: Segment
+back_to_listing: back to segments listing
+back_to_detail: back to detail
+messages:
+	segment_was_created: Segment was created.
+	segment_was_updated: Segment was updated.
+	segment_not_found: Segment not found.
+
+fields:
+	name: Name
+	code: Identifier
+	created: Created
+	updated: Updated
+	table_name: Source table
+	rows: "Count (approx)"
+	rows_help: "Doesn't contain accurate data. Actualized in periodical intervals."
+	query_fields: Database fields
+	query_string: Database query
+	segment_group_id: Group
+	avg_month_payment: Average monthly payment
+	avg_subscription_payment: Average payments for subscriptions
+	avg_product_payment: Average payments for products
+	criteria: Criteria
+	version: Version
+
+required:
+	name: Name field is required
+	code: Identifier is required
+	table_name: Table name is required
+
+
+placeholder:
+	name: for example Users with month subscriptions
+	code: for example users_with_month_subscription
+	table_name: for example users
+
+default:
+	header: Segments
+
+show:
+	header: Segment %name%
+	edit: Edit segment
+	basic_info: Basic info
+	show_data: Show data
+	export: Export
+	no_data: Segment doens't contains any data
+	stats: Stats
+
+edit:
+	title: Edit segment %name%
+	header: Edit segment
+
+new:
+	header: New segment

@@ -1,0 +1,113 @@
+{block #title}{_segment.show.header, [name => $segment->name]}{/block}
+
+{block scripts}
+<script type="text/javascript" src="{$basePath}/layouts/admin/js/jquery.tablesorter.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".tablesorter").tablesorter();
+    });
+</script>
+{/block}
+
+{block #content}
+
+<div class="row">
+
+  <div class="col-md-12">
+
+    <a n:href="default"><i class="fa fa-angle-left"></i> {_segment.back_to_listing}</a>
+
+    <div class="page-header">
+      <h1>
+        <small>[#{$segment->id}] {_segment.segment}</small> {$segment->name}
+        <a n:href="Edit $segment->id" class="btn btn-primary btn-lg pull-right"><i class="fa fa-pencil"></i>  {_segment.show.edit}</a>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">{_segment.show.basic_info}</div>
+      <ul class="list-group">
+        <li class="list-group-item"><b>{_segment.fields.code}:</b> <code>{$segment->code}</code></li>
+        <li class="list-group-item"><b>{_segment.fields.segment_group_id}:</b> {$segment->segment_group->name}</li>
+        <li class="list-group-item"><b>{_segment.fields.table_name}:</b> {$segment->table_name}</li>
+        <li class="list-group-item"><b>{_segment.fields.created}:</b> <span class="text-muted">{$segment->created_at|userDate}</span></li>
+        <li n:if="$segment->created_at != $segment->updated_at" class="list-group-item"><b>{_segment.fields.updated}:</b> <span class="text-muted">{$segment->updated_at|userDate}</span></li>
+
+      </ul>
+     </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">{_segment.show.stats}</div>
+      <ul class="list-group">
+          <li class="list-group-item"><b>{_segment.fields.rows}:</b> ~{$segment->cache_count} {_('segment.fields.rows_help')|helpIcon|noescape}</li>
+        <li n:ifset="$avgMonthPayment" class="list-group-item"><b>{_segment.fields.avg_month_payment}:</b> {$avgMonthPayment|number:2} €</li>
+        <li n:ifset="$avgSubscriptionPayments" class="list-group-item"><b>{_segment.fields.avg_subscription_payment}:</b> {$avgSubscriptionPayments|number:2}</li>
+        <li n:ifset="$avgProductPayments" class="list-group-item"><b>{_segment.fields.avg_product_payment}:</b> {$avgProductPayments|number:2}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!--
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">Query</div>
+      <div class="panel-content" id="html-content">
+        <pre><code class="sql">{$segment->fields}</code></pre>
+        <pre><code class="sql">{$segment->query_string}</code></pre>
+      </div>
+    </div>
+  </div>
+  -->
+
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <p>
+      <a n:href="show id => $segment->id, data => true" class="btn btn-primary"><i class="fa fa-list-alt"></i> {_segment.show.show_data}</a>
+      <a n:href="download id => $segment->id, 'format' => 'CSV', 'extension' => 'csv'" class="btn btn-info"><i class="fa fa-download"></i> {_segment.show.export} CSV</a>
+      <a n:href="download id => $segment->id, 'format' => 'Excel2007', 'extension' => 'xlsx'" class="btn btn-info"><i class="fa fa-download"></i> {_segment.show.export} XSLX</a>
+      <a n:href="download id => $segment->id, 'format' => 'OpenDocument', 'extension' => 'ods'" class="btn btn-info"><i class="fa fa-download"></i> {_segment.show.export} ODT</a>
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    {control segmentValuesGraph}
+  </div>
+</div>
+
+<div class="row" n:if="$showData">
+  <div class="col-md-12">
+    <hr>
+    <table n:if="$data" class="table table-striped table-hover table-bordered tablesorter">
+      <thead>
+        <tr>
+          <th n:foreach="$fields as $field"><a href="#">{$field}</a></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr n:foreach="$data as $row">
+          <td n:foreach="$row as $key => $value">
+            {if $key == 'id'} {* hack pre userov - zatial ine segmenty nemame *}
+              <a n:href=":Users:UsersAdmin:show id => $value">{$value}</a>
+            {else}
+              {$value}
+            {/if}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div n:if="!$data" class="well text-muted">
+      {_segment.show.no_data}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+services:
+	moduleManager:
+		setup:
+			- addModule(Crm\SegmentModule\SegmentModule())
+
+	- Crm\SegmentModule\Repository\SegmentsRepository
+	- Crm\SegmentModule\Repository\SegmentGroupsRepository
+	- Crm\SegmentModule\Repository\SegmentsValuesRepository
+	- Crm\SegmentModule\SegmentFactory
+	- Crm\SegmentModule\Commands\UpdateCountsCommand
+	- Crm\SegmentModule\Commands\ProcessCriteriaSegmentsCommand
+	- Crm\SegmentModule\Forms\SegmentFormFactory
+	- Crm\SegmentModule\Api\ListApiHandler
+	- Crm\SegmentModule\Api\UsersApiHandler
+	- Crm\SegmentModule\Api\CheckApiHandler
+	- Crm\SegmentModule\Api\CriteriaHandler
+	- Crm\SegmentModule\Api\ListGroupsHandler
+	- Crm\SegmentModule\Api\CreateOrUpdateSegmentHandler
+	- Crm\SegmentModule\Api\ShowSegmentHandler
+	- Crm\SegmentModule\Api\CountsHandler
+	- Crm\SegmentModule\Criteria\Generator
+	- Crm\SegmentModule\Api\RelatedHandler
+	- Crm\SegmentModule\Seeders\SegmentsSeeder

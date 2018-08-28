@@ -1,0 +1,22 @@
+{block #title}{_segment.edit.title, [name => $segment->name]}{/block}
+
+{block #content}
+
+<div class="row">
+  <div class="col-md-12">
+    <a n:href="Show $segment->id"><i class="fa fa-angle-left"></i> {_segment.back_to_detail}</a>
+
+    <div class="page-header">
+      <h1>
+        {_segment.edit.header}:
+        <small>[{$segment->name}]</small>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    {control segmentForm}
+  </div>
+</div>

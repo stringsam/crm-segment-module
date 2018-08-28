@@ -1,0 +1,16 @@
+{
+  "name": "remp/segment-module",
+  "description": "CRM Segment Module",
+  "version": "0.0.1",
+  "type": "library",
+  "require": {
+    "php": "^7.1"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Crm\\SegmentModule\\": "src/"
+    },
+    "classmap": ["src/"]
+  }
+}

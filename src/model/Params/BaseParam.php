@@ -1,0 +1,90 @@
+<?php
+
+namespace Crm\SegmentModule\Params;
+
+use Crm\SegmentModule\Criteria\InvalidCriteriaException;
+use Nette\Utils\DateTime;
+
+abstract class BaseParam
+{
+    protected $type;
+
+    private $key;
+
+    private $required;
+
+    private $default;
+
+    private $group;
+
+    protected $data = null;
+
+    public function __construct(string $key, bool $required = false, $default = null, string $group = null)
+    {
+        $this->key = $key;
+        $this->required = $required;
+        $this->default = $default;
+        $this->group = $group;
+    }
+
+    public function key(): string
+    {
+        return $this->key;
+    }
+
+    public function type(): string
+    {
+        return $this->type;
+    }
+
+    public function required(): bool
+    {
+        return $this->required;
+    }
+
+    public function default()
+    {
+        return $this->default;
+    }
+
+    public function group(): string
+    {
+        return $this->group == null ? 'General' : $this->group;
+    }
+
+    public function blueprint(): array
+    {
+        $result = [
+            'type' => $this->type(),
+            'required' => $this->required(),
+            'default' => $this->default(),
+        ];
+        if ($this->group()) {
+            $result['group'] = $this->group;
+        }
+        return $result;
+    }
+
+    abstract public function isValid($data): Validation;
+
+    abstract public function equals(BaseParam $param): bool;
+
+    public function setData($data): self
+    {
+        if (!$this->isValid($data)) {
+            throw new InvalidCriteriaException("Trying to set invalid data");
+        }
+        $this->data = $data;
+        return $this;
+    }
+
+    public function hasData(): bool
+    {
+        return $this->data !== null;
+    }
+
+    protected function validDateFormat($date): bool
+    {
+        return DateTime::createFromFormat(DATE_RFC3339, $date) !== false;
+    }
+}
