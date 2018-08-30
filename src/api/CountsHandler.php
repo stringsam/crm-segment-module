@@ -36,37 +36,38 @@ class CountsHandler extends ApiHandler
 
     public function params()
     {
-        return [
-            new InputParam(InputParam::TYPE_GET, 'table_name', InputParam::REQUIRED),
-        ];
+        return [];
     }
 
     public function handle(ApiAuthorizationInterface $authorization)
     {
-        $paramsProcessor = new ParamsProcessor($this->params());
-        if ($paramsProcessor->isError()) {
-            $response = new JsonResponse(['status' => 'error', 'message' => 'Invalid params']);
-            $response->setHttpCode(Response::S400_BAD_REQUEST);
-            return $response;
-        }
-        $params = $paramsProcessor->getValues();
-
-        $inputJson = file_get_contents("php://input");
-        if (!$inputJson) {
-            $response = new JsonResponse(['status' => 'error', 'message' => 'Empty post input']);
+        $request = file_get_contents("php://input");
+        if (empty($request)) {
+            $response = new JsonResponse(['status' => 'error', 'message' => 'Empty request body, JSON expected']);
             $response->setHttpCode(Response::S400_BAD_REQUEST);
             return $response;
         }
 
         try {
-            $jsonData = Json::decode($inputJson, JSON::FORCE_ARRAY);
+            $params = Json::decode($request, Json::FORCE_ARRAY);
         } catch (JsonException $e) {
-            $response = new JsonResponse(['status' => 'error', 'message' => 'Wrong json format']);
+            $response = new JsonResponse(['status' => 'error', 'message' => "Malformed JSON: " . $e->getMessage()]);
             $response->setHttpCode(Response::S400_BAD_REQUEST);
             return $response;
         }
 
-        $queryString = $this->generator->process($params['table_name'], $jsonData);
+        if (!isset($params['table_name'])) {
+            $response = new JsonResponse(['status' => 'error', 'message' => "param missing: table_name"]);
+            $response->setHttpCode(Response::S400_BAD_REQUEST);
+            return $response;
+        }
+        if (!isset($params['criteria'])) {
+            $response = new JsonResponse(['status' => 'error', 'message' => "param missing: criteria"]);
+            $response->setHttpCode(Response::S400_BAD_REQUEST);
+            return $response;
+        }
+
+        $queryString = $this->generator->process($params['table_name'], $params['criteria']);
 
         $query = new SegmentQuery($queryString, $params['table_name'], $params['table_name'] . '.id');
         $segment = new Segment($this->context, $query);
