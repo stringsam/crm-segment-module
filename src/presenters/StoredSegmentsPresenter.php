@@ -55,6 +55,10 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->template->segments = $this->segmentsRepository->all();
     }
 
+    public function renderNew()
+    {
+    }
+
     public function renderEdit($id)
     {
         $this->template->segment = $this->segmentsRepository->find($id);
