@@ -85,6 +85,7 @@ abstract class BaseParam
 
     protected function validDateFormat($date): bool
     {
-        return DateTime::createFromFormat(DATE_RFC3339, $date) !== false;
+        return DateTime::createFromFormat("Y-m-d\TH:i:s.uP", $date) !== false
+            || DateTime::createFromFormat(DateTime::RFC3339, $date) !== false;
     }
 }
