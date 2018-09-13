@@ -14,7 +14,7 @@ fields:
 	created: Vytvořený
 	updated: Upravený
 	table_name: Zdrojová tabulka
-	rows: Počet (přibližně)
+	rows: "Počet (přibližně)"
 	rows_help: Nezobrazuje přesná data. Číslo se aktualizuje v pravidelných intervalech.
 	query_fields: Sloupce
 	query_string: Databázový dotaz
