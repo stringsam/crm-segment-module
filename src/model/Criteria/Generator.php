@@ -67,7 +67,7 @@ class Generator
                 }
 
                 return [
-                    'where' => "t{$prefix}.id",
+                    'where' => "t{$prefix}.id IS NOT NULL",
                     'join' => ["LEFT JOIN ({$join}) AS t{$prefix} ON t{$prefix}.id = %table%.id"],
                     'fields' => $fields,
                 ];
