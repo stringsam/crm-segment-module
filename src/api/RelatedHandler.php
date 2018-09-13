@@ -6,6 +6,7 @@ use Crm\ApiModule\Api\JsonResponse;
 use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
 use Crm\ApiModule\Api\ApiHandler;
 use Crm\SegmentModule\Criteria\Generator;
+use Crm\SegmentModule\Criteria\InvalidCriteriaException;
 use Crm\SegmentModule\Repository\SegmentsRepository;
 use Nette\Application\LinkGenerator;
 use Nette\Http\Response;
@@ -67,7 +68,13 @@ class RelatedHandler extends ApiHandler
             return $response;
         }
 
-        $inputCriteria = $this->generator->extractCriteria($params['table_name'], $params['criteria']);
+        try {
+            $inputCriteria = $this->generator->extractCriteria($params['table_name'], $params['criteria']);
+        } catch (InvalidCriteriaException $e) {
+            $response = new JsonResponse(['status' => 'error', 'message' => $e->getMessage()]);
+            $response->setHttpCode(Response::S400_BAD_REQUEST);
+            return $response;
+        }
 
         $segments = $this->segmentsRepository->all()->where(['version' => 2, 'table_name' => $params['table_name']]);
         $result = [];
