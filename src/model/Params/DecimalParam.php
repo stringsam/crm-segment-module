@@ -46,12 +46,15 @@ class DecimalParam extends BaseParam
 
     public function isValid($data): Validation
     {
+        if (!is_array($data)) {
+            return new Validation('Invalid structure of value for param ['. $this->key() . '], object with keys [gt, gte, lt, lte, eq] expected');
+        }
         foreach ($data as $operator => $value) {
             if (!in_array($operator, ['gt', 'gte', 'lt', 'lte', 'eq'])) {
                 return new Validation("Invalid operator '{$operator}'");
             }
             if (!is_double($value) && !is_int($value)) {
-                return new Validation("Invalid decimal format '{value}'");
+                return new Validation("Invalid type of value for decimal param " . $this->key() . ": '{$value}' (type " . gettype($value) . ")");
             }
         }
         return new Validation();
@@ -59,9 +62,9 @@ class DecimalParam extends BaseParam
 
     public function equals(BaseParam $param): bool
     {
-        if (get_class($param) != get_class($this)) {
+        if (!($param instanceof static)) {
             throw new \Exception("Cannot compare " . get_class($param) . ' with NumberParam');
         }
-        return $param->escapedConditions() == $this->escapedConditions();
+        return $param->escapedConditions($param->key()) == $this->escapedConditions($this->key());
     }
 }

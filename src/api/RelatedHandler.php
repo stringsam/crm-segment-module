@@ -7,6 +7,7 @@ use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
 use Crm\ApiModule\Api\ApiHandler;
 use Crm\SegmentModule\Criteria\Generator;
 use Crm\SegmentModule\Criteria\InvalidCriteriaException;
+use Crm\SegmentModule\Params\BaseParam;
 use Crm\SegmentModule\Repository\SegmentsRepository;
 use Nette\Application\LinkGenerator;
 use Nette\Http\Response;
@@ -113,9 +114,14 @@ class RelatedHandler extends ApiHandler
         foreach ($inputCriteria as $criteria) {
             $found = false;
             foreach ($possibleCriteria as $possible) {
-                if ($possible['key'] == $criteria['key']) {
-                    if (get_class($possible['param']) == get_class($criteria['param'])) {
-                        if ($possible['param']->equals($criteria['param'])) {
+                if ($possible['key'] === $criteria['key']) {
+                    /** @var BaseParam $possibleParam */
+                    $possibleParam = $possible['param'];
+                    /** @var BaseParam $criteriaParam */
+                    $criteriaParam = $criteria['param'];
+
+                    if (get_class($possibleParam) === get_class($criteriaParam)) {
+                        if ($possibleParam->equals($criteriaParam)) {
                             $found = true;
                             break;
                         }

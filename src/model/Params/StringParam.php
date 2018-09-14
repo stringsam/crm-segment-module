@@ -22,7 +22,7 @@ class StringParam extends BaseParam
 
     public function equals(BaseParam $param): bool
     {
-        if (get_class($param) != get_class($this)) {
+        if (!($param instanceof static)) {
             throw new \Exception("Cannot compare " . get_class($param) . ' with StringParam');
         }
         return $param->value() == $this->value();
