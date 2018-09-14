@@ -48,6 +48,9 @@ class Generator
     {
         foreach ($nodes as $param) {
             if ($param['type'] == 'criteria') {
+                if (!isset($tableCriteria[$param['key']])) {
+                    throw new InvalidCriteriaException("Table [{$table}] does not recognize field [{$param['key']}]. Please check the criteria definition.");
+                }
                 $criteria = $tableCriteria[$param['key']];
                 $paramBag = $this->buildParamBag($criteria, $param['values']);
                 $join = $criteria->join($paramBag);
@@ -203,6 +206,9 @@ class Generator
         $output = [];
         foreach ($nodes as $param) {
             if ($param['type'] == 'criteria') {
+                if (!isset($tableCriteria[$param['key']])) {
+                    throw new InvalidCriteriaException("Table [{$table}] does not recognize field [{$param['key']}]. Please check the criteria definition.");
+                }
                 $criteria = $tableCriteria[$param['key']];
                 return [$this->buildParamBag($criteria, $param['values'])];
             } elseif ($param['type'] == 'operator') {
