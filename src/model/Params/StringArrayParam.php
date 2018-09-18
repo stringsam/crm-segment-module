@@ -8,9 +8,9 @@ class StringArrayParam extends BaseParam
 
     private $options = false;
 
-    public function __construct(string $key, bool $required = false, $default = null, string $group = null, array $options = null)
+    public function __construct(string $key, string $label, string $help, bool $required = false, $default = null, string $group = null, array $options = null)
     {
-        parent::__construct($key, $required, $default, $group);
+        parent::__construct($key, $label, $help, $required, $default, $group);
         $this->options = $options;
     }
 
