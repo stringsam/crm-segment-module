@@ -3,8 +3,8 @@
 namespace Crm\SegmentModule\Criteria;
 
 use Crm\ApplicationModule\Criteria\CriteriaInterface;
-use Crm\SegmentModule\Params\ParamsBag;
 use Crm\ApplicationModule\Criteria\CriteriaStorage;
+use Crm\SegmentModule\Params\ParamsBag;
 use Nette\Utils\Strings;
 
 class Generator
