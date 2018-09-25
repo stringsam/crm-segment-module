@@ -54,6 +54,7 @@ class Generator
                 if (!isset($tableCriteria[$param['key']])) {
                     throw new InvalidCriteriaException("Table [{$table}] does not recognize field [{$param['key']}]. Please check the criteria definition.");
                 }
+                /** @var CriteriaInterface $criteria */
                 $criteria = $tableCriteria[$param['key']];
                 $paramBag = $this->buildParamBag($criteria, $param['values']);
                 $join = $criteria->join($paramBag);

@@ -24,6 +24,9 @@ class ParamsBag
 
     public function get($key): BaseParam
     {
+        if (!isset($this->params[$key])) {
+            throw new InvalidParamException("Param [{$key}] not provided. Did you use has() method before getting optional param?");
+        }
         return $this->params[$key];
     }
 
