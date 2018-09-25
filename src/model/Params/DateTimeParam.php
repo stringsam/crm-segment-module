@@ -119,8 +119,8 @@ class DateTimeParam extends BaseParam
 
     private function validInterval($data): Validation
     {
-        if (!is_array($data)) {
-            return new Validation("Missing array data in interval key for datetime param");
+        if (!is_array($data) || empty($data)) {
+            return new Validation("Missing interval definition for datetime param");
         }
         foreach ($data as $key => $value) {
             if (!in_array($key, ['eq', 'gt', 'gte', 'lt', 'lte'])) {
