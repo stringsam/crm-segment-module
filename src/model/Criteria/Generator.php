@@ -46,8 +46,11 @@ class Generator
 
     private function processNodes(array $tableCriteria, string $table, array $nodes, int $prefix)
     {
-        foreach ($nodes as $param) {
+        foreach ($nodes as $i => $param) {
             if ($param['type'] == 'criteria') {
+                if (!isset($param['key'])) {
+                    throw new InvalidCriteriaException("Missing [key] property in one of the criteria");
+                }
                 if (!isset($tableCriteria[$param['key']])) {
                     throw new InvalidCriteriaException("Table [{$table}] does not recognize field [{$param['key']}]. Please check the criteria definition.");
                 }
@@ -206,6 +209,9 @@ class Generator
         $output = [];
         foreach ($nodes as $param) {
             if ($param['type'] == 'criteria') {
+                if (!isset($param['key'])) {
+                    throw new InvalidCriteriaException("Missing [key] property in one of the criteria");
+                }
                 if (!isset($tableCriteria[$param['key']])) {
                     throw new InvalidCriteriaException("Table [{$table}] does not recognize field [{$param['key']}]. Please check the criteria definition.");
                 }
