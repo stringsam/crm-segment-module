@@ -2,9 +2,9 @@
 
 namespace Crm\SegmentModule\Api;
 
+use Crm\ApiModule\Api\ApiHandler;
 use Crm\ApiModule\Api\JsonResponse;
 use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
-use Crm\ApiModule\Api\ApiHandler;
 use Crm\ApplicationModule\Criteria\CriteriaStorage;
 use Nette\Http\Response;
 

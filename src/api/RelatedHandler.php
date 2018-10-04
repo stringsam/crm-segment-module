@@ -2,15 +2,19 @@
 
 namespace Crm\SegmentModule\Api;
 
+use Crm\ApiModule\Api\ApiHandler;
 use Crm\ApiModule\Api\JsonResponse;
 use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
-use Crm\ApiModule\Api\ApiHandler;
 use Crm\SegmentModule\Criteria\Generator;
+use Crm\SegmentModule\Criteria\InvalidCriteriaException;
+use Crm\SegmentModule\Params\BaseParam;
 use Crm\SegmentModule\Repository\SegmentsRepository;
 use Nette\Application\LinkGenerator;
 use Nette\Http\Response;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 class RelatedHandler extends ApiHandler
 {
@@ -65,12 +69,24 @@ class RelatedHandler extends ApiHandler
             return $response;
         }
 
-        $inputCriteria = $this->generator->extractCriteria($params['table_name'], $params['criteria']);
+        try {
+            $inputCriteria = $this->generator->extractCriteria($params['table_name'], $params['criteria']);
+        } catch (InvalidCriteriaException $e) {
+            $response = new JsonResponse(['status' => 'error', 'message' => $e->getMessage()]);
+            $response->setHttpCode(Response::S400_BAD_REQUEST);
+            return $response;
+        }
 
         $segments = $this->segmentsRepository->all()->where(['version' => 2, 'table_name' => $params['table_name']]);
         $result = [];
         foreach ($segments as $segment) {
-            $criteria = Json::decode($segment->criteria, Json::FORCE_ARRAY);
+            try {
+                $criteria = Json::decode($segment->criteria, Json::FORCE_ARRAY);
+            } catch (JsonException $e) {
+                Debugger::log("Invalid JSON structure in segment [{$segment->id}]", ILogger::ERROR);
+                continue;
+            }
+
             $segmentCriteria = $this->generator->extractCriteria($params['table_name'], $criteria);
 
             if ($this->isRelated($inputCriteria, $segmentCriteria)) {
@@ -98,9 +114,14 @@ class RelatedHandler extends ApiHandler
         foreach ($inputCriteria as $criteria) {
             $found = false;
             foreach ($possibleCriteria as $possible) {
-                if ($possible['key'] == $criteria['key']) {
-                    if (get_class($possible['param']) == get_class($criteria['param'])) {
-                        if ($possible['param']->equals($criteria['param'])) {
+                if ($possible['key'] === $criteria['key']) {
+                    /** @var BaseParam $possibleParam */
+                    $possibleParam = $possible['param'];
+                    /** @var BaseParam $criteriaParam */
+                    $criteriaParam = $criteria['param'];
+
+                    if (get_class($possibleParam) === get_class($criteriaParam)) {
+                        if ($possibleParam->equals($criteriaParam)) {
                             $found = true;
                             break;
                         }

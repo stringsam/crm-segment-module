@@ -2,11 +2,11 @@
 
 namespace Crm\SegmentModule\Api;
 
+use Crm\ApiModule\Api\ApiHandler;
 use Crm\ApiModule\Api\JsonResponse;
 use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
 use Crm\ApiModule\Params\InputParam;
 use Crm\ApiModule\Params\ParamsProcessor;
-use Crm\ApiModule\Api\ApiHandler;
 use Crm\SegmentModule\Repository\SegmentsRepository;
 use Nette\Http\Response;
 use Nette\Utils\Json;
@@ -51,8 +51,9 @@ class ShowSegmentHandler extends ApiHandler
             'name' => $segment->name,
             'code' => $segment->code,
             'table_name' => $segment->table_name,
-            'fields' => $segment->fields,
+            'fields' => explode(',', $segment->fields),
             'criteria' => $segment->criteria ? Json::decode($segment->criteria, Json::PRETTY) : null,
+            'group_id' => $segment->segment_group_id,
         ]]);
         $response->setHttpCode(Response::S200_OK);
         return $response;

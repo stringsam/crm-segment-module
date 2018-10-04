@@ -2,11 +2,11 @@
 
 namespace Crm\SegmentModule\Presenters;
 
+use Crm\AdminModule\Presenters\AdminPresenter;
 use Crm\ApplicationModule\Components\Graphs\GoogleLineGraphGroupControlFactoryInterface;
 use Crm\ApplicationModule\ExcelFactory;
 use Crm\ApplicationModule\Graphs\Criteria;
 use Crm\ApplicationModule\Graphs\GraphDataItem;
-use Crm\AdminModule\Presenters\AdminPresenter;
 use Crm\SegmentModule\Forms\SegmentFormFactory;
 use Crm\SegmentModule\Repository\SegmentGroupsRepository;
 use Crm\SegmentModule\Repository\SegmentsRepository;
@@ -53,6 +53,10 @@ class StoredSegmentsPresenter extends AdminPresenter
     {
         $this->template->segmentGroups = $this->segmentGroupsRepository->all();
         $this->template->segments = $this->segmentsRepository->all();
+    }
+
+    public function renderNew()
+    {
     }
 
     public function renderEdit($id)

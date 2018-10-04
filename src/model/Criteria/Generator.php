@@ -3,8 +3,8 @@
 namespace Crm\SegmentModule\Criteria;
 
 use Crm\ApplicationModule\Criteria\CriteriaInterface;
-use Crm\SegmentModule\Params\ParamsBag;
 use Crm\ApplicationModule\Criteria\CriteriaStorage;
+use Crm\SegmentModule\Params\ParamsBag;
 use Nette\Utils\Strings;
 
 class Generator
@@ -46,8 +46,15 @@ class Generator
 
     private function processNodes(array $tableCriteria, string $table, array $nodes, int $prefix)
     {
-        foreach ($nodes as $param) {
+        foreach ($nodes as $i => $param) {
             if ($param['type'] == 'criteria') {
+                if (!isset($param['key'])) {
+                    throw new InvalidCriteriaException("Missing [key] property in one of the criteria");
+                }
+                if (!isset($tableCriteria[$param['key']])) {
+                    throw new InvalidCriteriaException("Table [{$table}] does not recognize field [{$param['key']}]. Please check the criteria definition.");
+                }
+                /** @var CriteriaInterface $criteria */
                 $criteria = $tableCriteria[$param['key']];
                 $paramBag = $this->buildParamBag($criteria, $param['values']);
                 $join = $criteria->join($paramBag);
@@ -67,7 +74,7 @@ class Generator
                 }
 
                 return [
-                    'where' => "t{$prefix}.id",
+                    'where' => "t{$prefix}.id IS NOT NULL",
                     'join' => ["LEFT JOIN ({$join}) AS t{$prefix} ON t{$prefix}.id = %table%.id"],
                     'fields' => $fields,
                 ];
@@ -203,6 +210,12 @@ class Generator
         $output = [];
         foreach ($nodes as $param) {
             if ($param['type'] == 'criteria') {
+                if (!isset($param['key'])) {
+                    throw new InvalidCriteriaException("Missing [key] property in one of the criteria");
+                }
+                if (!isset($tableCriteria[$param['key']])) {
+                    throw new InvalidCriteriaException("Table [{$table}] does not recognize field [{$param['key']}]. Please check the criteria definition.");
+                }
                 $criteria = $tableCriteria[$param['key']];
                 return [$this->buildParamBag($criteria, $param['values'])];
             } elseif ($param['type'] == 'operator') {

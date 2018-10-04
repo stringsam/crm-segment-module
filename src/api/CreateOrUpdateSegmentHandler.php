@@ -2,11 +2,11 @@
 
 namespace Crm\SegmentModule\Api;
 
+use Crm\ApiModule\Api\ApiHandler;
 use Crm\ApiModule\Api\JsonResponse;
 use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
 use Crm\ApiModule\Params\InputParam;
 use Crm\ApiModule\Params\ParamsProcessor;
-use Crm\ApiModule\Api\ApiHandler;
 use Crm\SegmentModule\Criteria\EmptyCriteriaException;
 use Crm\SegmentModule\Criteria\Generator;
 use Crm\SegmentModule\Criteria\InvalidCriteriaException;
@@ -99,7 +99,7 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
         }
 
         // prepare data for internal store
-        $params['fields'] = implode(',', $fields);
+        $params['fields'] = implode(',', array_merge($params['fields'], $fields));
         $params['criteria'] = JSON::encode($params['criteria']);
 
         if (isset($params['id'])) {

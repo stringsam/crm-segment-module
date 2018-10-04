@@ -8,9 +8,9 @@ class NumberArrayParam extends BaseParam
 
     private $options = false;
 
-    public function __construct($key, bool $required = false, $default = null, $group = null, $options = null)
+    public function __construct(string $key, string $label, string $help, bool $required = false, $default = null, $group = null, $options = null)
     {
-        parent::__construct($key, $required, $default, $group);
+        parent::__construct($key, $label, $help, $required, $default, $group);
         $newOptions = [];
         foreach ($options as $key => $value) {
             $newOptions[intval($key)] = $value;
@@ -91,7 +91,7 @@ class NumberArrayParam extends BaseParam
 
     public function equals(BaseParam $param): bool
     {
-        if (get_class($param) != get_class($this)) {
+        if (!($param instanceof static)) {
             throw new \Exception("Cannot compare " . get_class($param) . ' with NumberArrayParam');
         }
 
