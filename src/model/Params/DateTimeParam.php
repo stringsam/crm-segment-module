@@ -62,15 +62,15 @@ class DateTimeParam extends BaseParam
     private function formatDoubleOperator(string $operator, string $value, string $key1, string $key2): string
     {
         if ($operator == 'gt') {
-            return " {$key1} < {$value} AND {$key2} > {$value}";
+            return " {$key2} > {$value}";
         } elseif ($operator == 'gte') {
-            return " {$key1} <= {$value} AND {$key2} >= {$value}";
+            return " {$key2} >= {$value}";
         } elseif ($operator == 'lt') {
-            return " {$key1} < {$value} AND {$key2} > {$value}";
+            return " {$key1} < {$value}";
         } elseif ($operator == 'lte') {
-            return " {$key1} <= {$value} AND {$key2} <= {$value}";
+            return " {$key1} <= {$value}";
         } elseif ($operator == 'eq') {
-            return " {$key1} < {$value} AND {$key2} > {$value} ";
+            return " {$key1} <= {$value} AND {$key2} >= {$value} ";
         }
         return '';
     }
