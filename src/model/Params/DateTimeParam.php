@@ -30,7 +30,11 @@ class DateTimeParam extends BaseParam
         foreach ($this->data[self::TYPE_ABSOLUTE] as $operator => $datetime) {
             $date = DateTime::from(strtotime($datetime));
             $formatted = $date->format('Y-m-d H:i:s');
-            $where[] = $this->formatOperator($operator, "'{$formatted}'", $key1, $key2);
+            if ($key2) {
+                $where[] = $this->formatDoubleOperator($operator, "'{$formatted}'", $key1, $key2);
+            } else {
+                $where[] = $this->formatOperator($operator, "'{$formatted}'", $key1);
+            }
         }
         return $where;
     }
@@ -51,6 +55,22 @@ class DateTimeParam extends BaseParam
             } else {
                 return " {$key1} > $value ";
             }
+        }
+        return '';
+    }
+
+    private function formatDoubleOperator(string $operator, string $value, string $key1, string $key2): string
+    {
+        if ($operator == 'gt') {
+            return " {$key2} > {$value}";
+        } elseif ($operator == 'gte') {
+            return " {$key2} >= {$value}";
+        } elseif ($operator == 'lt') {
+            return " {$key1} < {$value}";
+        } elseif ($operator == 'lte') {
+            return " {$key1} <= {$value}";
+        } elseif ($operator == 'eq') {
+            return " {$key1} <= {$value} AND {$key2} >= {$value} ";
         }
         return '';
     }
