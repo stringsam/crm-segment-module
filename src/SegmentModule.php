@@ -2,9 +2,9 @@
 
 namespace Crm\SegmentModule;
 
+use Crm\ApiModule\Api\ApiRoutersContainerInterface;
 use Crm\ApiModule\Router\ApiIdentifier;
 use Crm\ApiModule\Router\ApiRoute;
-use Crm\ApiModule\Api\ApiRoutersContainerInterface;
 use Crm\ApplicationModule\Commands\CommandsContainerInterface;
 use Crm\ApplicationModule\CrmModule;
 use Crm\ApplicationModule\Menu\MenuContainerInterface;

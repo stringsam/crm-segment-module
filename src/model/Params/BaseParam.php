@@ -17,14 +17,20 @@ abstract class BaseParam
 
     private $group;
 
+    private $help;
+
+    private $label;
+
     protected $data = null;
 
-    public function __construct(string $key, bool $required = false, $default = null, string $group = null)
+    public function __construct(string $key, string $label, string $help, bool $required = false, $default = null, string $group = null)
     {
         $this->key = $key;
         $this->required = $required;
         $this->default = $default;
         $this->group = $group;
+        $this->help = $help;
+        $this->label = $label;
     }
 
     public function key(): string
@@ -47,6 +53,16 @@ abstract class BaseParam
         return $this->default;
     }
 
+    public function help()
+    {
+        return $this->help;
+    }
+
+    public function label()
+    {
+        return $this->label;
+    }
+
     public function group(): string
     {
         return $this->group == null ? 'General' : $this->group;
@@ -58,6 +74,8 @@ abstract class BaseParam
             'type' => $this->type(),
             'required' => $this->required(),
             'default' => $this->default(),
+            'help' => $this->help(),
+            'label' => $this->label(),
         ];
         if ($this->group()) {
             $result['group'] = $this->group;

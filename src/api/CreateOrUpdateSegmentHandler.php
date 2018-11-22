@@ -2,11 +2,11 @@
 
 namespace Crm\SegmentModule\Api;
 
+use Crm\ApiModule\Api\ApiHandler;
 use Crm\ApiModule\Api\JsonResponse;
 use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
 use Crm\ApiModule\Params\InputParam;
 use Crm\ApiModule\Params\ParamsProcessor;
-use Crm\ApiModule\Api\ApiHandler;
 use Crm\SegmentModule\Criteria\EmptyCriteriaException;
 use Crm\SegmentModule\Criteria\Generator;
 use Crm\SegmentModule\Criteria\InvalidCriteriaException;

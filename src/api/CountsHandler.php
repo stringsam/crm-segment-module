@@ -2,12 +2,12 @@
 
 namespace Crm\SegmentModule\Api;
 
+use Crm\ApiModule\Api\ApiHandler;
 use Crm\ApiModule\Api\JsonResponse;
 use Crm\ApiModule\Authorization\ApiAuthorizationInterface;
-use Crm\ApiModule\Params\InputParam;
-use Crm\ApiModule\Params\ParamsProcessor;
-use Crm\ApiModule\Api\ApiHandler;
+use Crm\SegmentModule\Criteria\EmptyCriteriaException;
 use Crm\SegmentModule\Criteria\Generator;
+use Crm\SegmentModule\Criteria\InvalidCriteriaException;
 use Crm\SegmentModule\Repository\SegmentGroupsRepository;
 use Crm\SegmentModule\Segment;
 use Crm\SegmentModule\SegmentQuery;
@@ -67,7 +67,17 @@ class CountsHandler extends ApiHandler
             return $response;
         }
 
-        $queryString = $this->generator->process($params['table_name'], $params['criteria']);
+        try {
+            $queryString = $this->generator->process($params['table_name'], $params['criteria']);
+        } catch (EmptyCriteriaException $emptyCriteriaException) {
+            $response = new JsonResponse(['status' => 'error', 'message' => $emptyCriteriaException->getMessage()]);
+            $response->setHttpCode(Response::S400_BAD_REQUEST);
+            return $response;
+        } catch (InvalidCriteriaException $invalidCriteriaException) {
+            $response = new JsonResponse(['status' => 'error', 'message' => $invalidCriteriaException->getMessage()]);
+            $response->setHttpCode(Response::S400_BAD_REQUEST);
+            return $response;
+        }
 
         $query = new SegmentQuery($queryString, $params['table_name'], $params['table_name'] . '.id');
         $segment = new Segment($this->context, $query);
