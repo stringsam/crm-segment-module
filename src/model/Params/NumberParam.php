@@ -46,12 +46,18 @@ class NumberParam extends BaseParam
 
     public function isValid($data): Validation
     {
+        if (!is_array($data)) {
+            return new Validation('Invalid structure of value for param ['. $this->key() . '], object with keys [gt, gte, lt, lte, eq] expected');
+        }
+        if (empty($data)) {
+            return new Validation('No value provided for ['. $this->key() . '], object with keys [gt, gte, lt, lte, eq] expected');
+        }
         foreach ($data as $operator => $value) {
             if (!in_array($operator, ['gt', 'gte', 'lt', 'lte', 'eq'])) {
                 return new Validation("Invalid operator '{$operator}'");
             }
             if (!is_int($value)) {
-                return new Validation("Invalid number format '{value}'");
+                return new Validation("Invalid type of value for number param " . $this->key() . ": '{$value}' (type " . gettype($value) . ")");
             }
         }
         return new Validation();
