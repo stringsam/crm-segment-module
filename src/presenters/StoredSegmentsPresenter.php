@@ -49,19 +49,30 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->database = $database;
     }
 
+    public function beforeRender()
+    {
+        parent::beforeRender();
+
+        $this->template->crmHost = getenv('CRM_HOST');
+        $this->template->segmentAuth = 'bearer ' . getenv('CRM_SEGMENT_TOKEN');
+    }
+
     public function renderDefault()
     {
         $this->template->segmentGroups = $this->segmentGroupsRepository->all();
         $this->template->segments = $this->segmentsRepository->all();
     }
 
-    public function renderNew()
+    public function renderNew($version = 2)
     {
+        $this->template->version = $version;
     }
 
-    public function renderEdit($id)
+    public function renderEdit($id, $version = 0)
     {
-        $this->template->segment = $this->segmentsRepository->find($id);
+        $segment = $this->segmentsRepository->find($id);
+        $this->template->segment = $segment;
+        $this->template->version = $version == 0 ? $segment->version : $version;
     }
 
     public function renderShow($id, $data = false)
@@ -71,21 +82,6 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->template->showData = $data;
 
         $segment = $this->segmentFactory->buildSegment($segmentRow->code);
-
-        // version 1 with segments query
-//        if ($segmentRow->table_name == 'users') {
-//            $query = "SELECT AVG(value) AS avg_month_payment FROM user_meta WHERE `key`='avg_month_payment' AND user_id IN (SELECT id FROM ({$segment->query()}) AS segment)";
-//            $average = $this->database->query($query)->fetch();
-//            $this->template->avgMonthPayment = $average->avg_month_payment;
-//
-//            $query = "SELECT AVG(value) AS avg_subscription_payment FROM user_meta WHERE `key`='paid_payments' AND user_id IN (SELECT id FROM ({$segment->query()}) AS segment)";
-//            $average = $this->database->query($query)->fetch();
-//            $this->template->avgSubscriptionPayments = $average->avg_subscription_payment;
-//
-//            $query = "SELECT AVG(value) AS avg_product_payment FROM user_meta WHERE `key`='product_payments' AND user_id IN (SELECT id FROM ({$segment->query()}) AS segment)";
-//            $average = $this->database->query($query)->fetch();
-//            $this->template->avgProductPayments = $average->avg_product_payment;
-//        }
 
         // version 2 with user ids array
         if ($segmentRow->table_name == 'users') {

@@ -13,7 +13,23 @@
 </div>
 
 <div class="row">
-  <div class="col-md-8">
-    {control segmentForm}
-  </div>
+  {if $version == 2}
+    <div class="col-md-12">
+      <div class="col-md-12">
+        <p>
+          {capture $segmentLink}<a n:href="new version => 1">{_segment.edit.old_version_link}</a>{/capture}
+          {_segment.edit.new_version, ['link' => $segmentLink]|noescape}
+        </p>
+        {include "@embed.latte"}
+      </div>
+    </div>
+  {else}
+    <div class="col-md-8">
+      <p>
+        {capture $segmentLink}<a n:href="new version => 2">{_segment.edit.new_version_link}</a>{/capture}
+        {_segment.edit.old_version, ['link' => $segmentLink]|noescape}
+      </p>
+      {control segmentForm}
+    </div>
+  {/if}
 </div>
