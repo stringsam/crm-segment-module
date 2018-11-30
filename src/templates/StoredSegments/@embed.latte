@@ -1,0 +1,23 @@
+{var $cancelPath = '/segment/stored-segments/'}
+{ifset $segmentId}
+    {var $cancelPath = '/segment/stored-segments/show/' . $segmentId}
+{/ifset}
+
+<script type="text/javascript">
+window.Segments = {
+    config: {
+        AUTH_TOKEN: {$segmentAuth},
+        API_HOST: {$crmHost},
+        CANCEL_PATH: {$cancelPath},
+        SEGMENT_ID: {ifset $segmentId}{$segmentId}{else}null{/ifset}
+    }
+};
+</script>
+
+<noscript><strong>We're sorry but remp-segment doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
+<div id="app"></div>
+
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel=stylesheet>
+<link rel="stylesheet" href="/layouts/admin/segmenter/css/chunk-vendors.329eb062.css">
+<script type='text/javascript' src='/layouts/admin/segmenter/js/chunk-vendors.5f80a724.js'></script>
+<script type='text/javascript' src='/layouts/admin/segmenter/js/app.27216264.js'></script>

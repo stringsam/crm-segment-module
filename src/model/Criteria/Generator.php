@@ -103,6 +103,11 @@ class Generator
                 }
             }
         }
+        return [
+            'where' => "",
+            'join' => [],
+            'fields' => [],
+        ];
     }
 
     public function process(string $table, array $params): string
