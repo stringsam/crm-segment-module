@@ -71,7 +71,7 @@ class NumberArrayParam extends BaseParam
 
     public function isValid($data): Validation
     {
-        if (!is_array($data)) {
+        if (!is_array($data) || empty($data)) {
             return new Validation("Missing data for NumberArray");
         }
         foreach ($data as $value) {
