@@ -52,9 +52,9 @@ class StoredSegmentsPresenter extends AdminPresenter
     public function beforeRender()
     {
         parent::beforeRender();
-
+        
         $this->template->crmHost = getenv('CRM_HOST');
-        $this->template->segmentAuth = 'bearer ' . getenv('CRM_SEGMENT_TOKEN');
+        $this->template->segmentAuth = 'Bearer ' . getenv('CRM_SEGMENT_TOKEN');
     }
 
     public function renderDefault()
