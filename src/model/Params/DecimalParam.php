@@ -49,6 +49,9 @@ class DecimalParam extends BaseParam
         if (!is_array($data)) {
             return new Validation('Invalid structure of value for param ['. $this->key() . '], object with keys [gt, gte, lt, lte, eq] expected');
         }
+        if (empty($data)) {
+            return new Validation('No value provided for ['. $this->key() . '], object with keys [gt, gte, lt, lte, eq] expected');
+        }
         foreach ($data as $operator => $value) {
             if (!in_array($operator, ['gt', 'gte', 'lt', 'lte', 'eq'])) {
                 return new Validation("Invalid operator '{$operator}'");
