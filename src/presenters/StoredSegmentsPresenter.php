@@ -11,6 +11,7 @@ use Crm\SegmentModule\Forms\SegmentFormFactory;
 use Crm\SegmentModule\Repository\SegmentGroupsRepository;
 use Crm\SegmentModule\Repository\SegmentsRepository;
 use Crm\SegmentModule\SegmentFactory;
+use Crm\SegmentModule\VisualSegmenterConfig;
 use Nette\Application\Responses\FileResponse;
 use Nette\Database\Context;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -29,6 +30,8 @@ class StoredSegmentsPresenter extends AdminPresenter
 
     private $segmentGroupsRepository;
 
+    private $visualSegmenterConfig;
+
     private $database;
 
     public function __construct(
@@ -37,6 +40,7 @@ class StoredSegmentsPresenter extends AdminPresenter
         SegmentFormFactory $segmentFormFactory,
         ExcelFactory $excelFactory,
         SegmentGroupsRepository $segmentGroupsRepository,
+        VisualSegmenterConfig $visualSegmenterConfig,
         Context $database
     ) {
         parent::__construct();
@@ -46,15 +50,8 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->segmentFormFactory = $segmentFormFactory;
         $this->excelFactory = $excelFactory;
         $this->segmentGroupsRepository = $segmentGroupsRepository;
+        $this->visualSegmenterConfig = $visualSegmenterConfig;
         $this->database = $database;
-    }
-
-    public function beforeRender()
-    {
-        parent::beforeRender();
-        
-        $this->template->crmHost = getenv('CRM_HOST');
-        $this->template->segmentAuth = 'Bearer ' . getenv('CRM_SEGMENT_TOKEN');
     }
 
     public function renderDefault()
@@ -216,6 +213,9 @@ class StoredSegmentsPresenter extends AdminPresenter
 
     public function renderEmbed($id)
     {
+        $this->template->crmHost = $this->visualSegmenterConfig->getHost();
+        $this->template->segmentAuth = 'Bearer ' . $this->visualSegmenterConfig->getKey();
+
         $segment = $this->segmentsRepository->find($id);
         $this->template->segment = $segment;
     }

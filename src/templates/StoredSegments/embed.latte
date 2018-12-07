@@ -1,7 +1,7 @@
 {var $cancelPath = '/segment/stored-segments/'}
-{ifset $segment}
+{if $segment}
     {var $cancelPath = '/segment/stored-segments/show/' . $segment->id}
-{/ifset}
+{/if}
 
 <script src="/layouts/default/js/iframeResizer.contentWindow.min.js"></script>
 
@@ -16,7 +16,6 @@ window.Segments = {
 };
 </script>
 
-<noscript><strong>We're sorry but remp-segment doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
 <div id="app"></div>
 
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel=stylesheet>
