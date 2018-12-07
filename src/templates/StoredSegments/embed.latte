@@ -1,7 +1,9 @@
 {var $cancelPath = '/segment/stored-segments/'}
-{ifset $segmentId}
-    {var $cancelPath = '/segment/stored-segments/show/' . $segmentId}
+{ifset $segment}
+    {var $cancelPath = '/segment/stored-segments/show/' . $segment->id}
 {/ifset}
+
+<script src="/layouts/default/js/iframeResizer.contentWindow.min.js"></script>
 
 <script type="text/javascript">
 window.Segments = {
@@ -9,7 +11,7 @@ window.Segments = {
         AUTH_TOKEN: {$segmentAuth},
         API_HOST: {$crmHost},
         CANCEL_PATH: {$cancelPath},
-        SEGMENT_ID: {ifset $segmentId}{$segmentId}{else}null{/ifset}
+        SEGMENT_ID: {if $segment}{$segment->id}{else}null{/if}
     }
 };
 </script>

@@ -20,7 +20,13 @@
           {capture $segmentLink}<a n:href="new version => 1">{_segment.edit.old_version_link}</a>{/capture}
           {_segment.edit.new_version, ['link' => $segmentLink]|noescape}
         </p>
-        {include "@embed.latte"}
+        <script type="text/javascript" src="/layouts/default/js/iframeResizer.min.js"></script>
+        <script>
+            $( window ).load(function() {
+                iFrameResize({ log: false, heightCalculationMethod: 'max' }, '#outside');
+            });
+        </script>
+        <iframe id="outside" src="{link embed}" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" height="7800" style="border: 0px; overflow: hidden; background: transparent; height: 980px; width:100%"></iframe>
       </div>
     </div>
   {else}
