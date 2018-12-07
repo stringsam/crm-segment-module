@@ -68,11 +68,11 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->template->version = $version;
     }
 
-    public function renderEdit($id, $version = 0)
+    public function renderEdit($id, $version = null)
     {
         $segment = $this->segmentsRepository->find($id);
         $this->template->segment = $segment;
-        $this->template->version = $version == 0 ? $segment->version : $version;
+        $this->template->version = $version == null ? $segment->version : $version;
     }
 
     public function renderShow($id, $data = false)
@@ -212,5 +212,11 @@ class StoredSegmentsPresenter extends AdminPresenter
             ->addGraphDataItem($graphDataItem1);
 
         return $control;
+    }
+
+    public function renderEmbed($id)
+    {
+        $segment = $this->segmentsRepository->find($id);
+        $this->template->segment = $segment;
     }
 }
