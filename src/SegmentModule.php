@@ -19,7 +19,7 @@ class SegmentModule extends CrmModule
         $mainMenu = new MenuItem(
             $this->translator->translate('segment.menu.segments'),
             ':Segment:StoredSegments:default',
-            'fa fa-sliders',
+            'fa fa-sliders-h',
             650,
             true
         );
