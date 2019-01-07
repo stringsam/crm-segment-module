@@ -3,6 +3,7 @@ services:
 		setup:
 			- addModule(Crm\SegmentModule\SegmentModule())
 
+	- Crm\SegmentModule\VisualSegmenterConfig(%segmenter.host%, %segmenter.api_key%)
 	- Crm\SegmentModule\Repository\SegmentsRepository
 	- Crm\SegmentModule\Repository\SegmentGroupsRepository
 	- Crm\SegmentModule\Repository\SegmentsValuesRepository

@@ -99,7 +99,12 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
         }
 
         // prepare data for internal store
-        $params['fields'] = implode(',', array_merge($params['fields'], $fields));
+        foreach ($params['fields'] as $field) {
+            if (!in_array($field, $fields)) {
+                $fields[] = $field;
+            }
+        }
+        $params['fields'] = implode(',', $fields);
         $params['criteria'] = JSON::encode($params['criteria']);
 
         if (isset($params['id'])) {

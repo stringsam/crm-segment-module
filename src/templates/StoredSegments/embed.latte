@@ -1,0 +1,25 @@
+{var $cancelPath = '/segment/stored-segments/'}
+{if $segment}
+    {var $cancelPath = '/segment/stored-segments/show/' . $segment->id}
+{/if}
+
+<script src="/layouts/default/js/iframeResizer.contentWindow.min.js"></script>
+
+<script type="text/javascript">
+window.Segments = {
+    config: {
+        AUTH_TOKEN: {$segmentAuth},
+        API_HOST: {$crmHost},
+        CANCEL_PATH: {$cancelPath},
+        SEGMENT_ID: {if $segment}{$segment->id}{else}null{/if}
+    }
+};
+</script>
+
+<div id="app"></div>
+
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" rel=stylesheet>
+<link rel="stylesheet" href="/layouts/admin/segmenter/css/chunk-vendors.css">
+<link rel="stylesheet" href="/layouts/admin/segmenter/css/app.css">
+<script type="text/javascript" src="/layouts/admin/segmenter/js/chunk-vendors.js"></script>
+<script type="text/javascript" src="/layouts/admin/segmenter/js/app.js"></script>

@@ -11,6 +11,7 @@ use Crm\SegmentModule\Forms\SegmentFormFactory;
 use Crm\SegmentModule\Repository\SegmentGroupsRepository;
 use Crm\SegmentModule\Repository\SegmentsRepository;
 use Crm\SegmentModule\SegmentFactory;
+use Crm\SegmentModule\VisualSegmenterConfig;
 use Nette\Application\Responses\FileResponse;
 use Nette\Database\Context;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -29,6 +30,8 @@ class StoredSegmentsPresenter extends AdminPresenter
 
     private $segmentGroupsRepository;
 
+    private $visualSegmenterConfig;
+
     private $database;
 
     public function __construct(
@@ -37,6 +40,7 @@ class StoredSegmentsPresenter extends AdminPresenter
         SegmentFormFactory $segmentFormFactory,
         ExcelFactory $excelFactory,
         SegmentGroupsRepository $segmentGroupsRepository,
+        VisualSegmenterConfig $visualSegmenterConfig,
         Context $database
     ) {
         parent::__construct();
@@ -46,6 +50,7 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->segmentFormFactory = $segmentFormFactory;
         $this->excelFactory = $excelFactory;
         $this->segmentGroupsRepository = $segmentGroupsRepository;
+        $this->visualSegmenterConfig = $visualSegmenterConfig;
         $this->database = $database;
     }
 
@@ -55,13 +60,16 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->template->segments = $this->segmentsRepository->all();
     }
 
-    public function renderNew()
+    public function renderNew($version = 2)
     {
+        $this->template->version = $version;
     }
 
-    public function renderEdit($id)
+    public function renderEdit($id, $version = null)
     {
-        $this->template->segment = $this->segmentsRepository->find($id);
+        $segment = $this->segmentsRepository->find($id);
+        $this->template->segment = $segment;
+        $this->template->version = $version == null ? $segment->version : $version;
     }
 
     public function renderShow($id, $data = false)
@@ -71,21 +79,6 @@ class StoredSegmentsPresenter extends AdminPresenter
         $this->template->showData = $data;
 
         $segment = $this->segmentFactory->buildSegment($segmentRow->code);
-
-        // version 1 with segments query
-//        if ($segmentRow->table_name == 'users') {
-//            $query = "SELECT AVG(value) AS avg_month_payment FROM user_meta WHERE `key`='avg_month_payment' AND user_id IN (SELECT id FROM ({$segment->query()}) AS segment)";
-//            $average = $this->database->query($query)->fetch();
-//            $this->template->avgMonthPayment = $average->avg_month_payment;
-//
-//            $query = "SELECT AVG(value) AS avg_subscription_payment FROM user_meta WHERE `key`='paid_payments' AND user_id IN (SELECT id FROM ({$segment->query()}) AS segment)";
-//            $average = $this->database->query($query)->fetch();
-//            $this->template->avgSubscriptionPayments = $average->avg_subscription_payment;
-//
-//            $query = "SELECT AVG(value) AS avg_product_payment FROM user_meta WHERE `key`='product_payments' AND user_id IN (SELECT id FROM ({$segment->query()}) AS segment)";
-//            $average = $this->database->query($query)->fetch();
-//            $this->template->avgProductPayments = $average->avg_product_payment;
-//        }
 
         // version 2 with user ids array
         if ($segmentRow->table_name == 'users') {
@@ -216,5 +209,14 @@ class StoredSegmentsPresenter extends AdminPresenter
             ->addGraphDataItem($graphDataItem1);
 
         return $control;
+    }
+
+    public function renderEmbed($id)
+    {
+        $this->template->crmHost = $this->visualSegmenterConfig->getHost();
+        $this->template->segmentAuth = 'Bearer ' . $this->visualSegmenterConfig->getKey();
+
+        $segment = $this->segmentsRepository->find($id);
+        $this->template->segment = $segment;
     }
 }

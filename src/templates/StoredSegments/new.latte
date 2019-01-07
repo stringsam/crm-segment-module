@@ -13,7 +13,29 @@
 </div>
 
 <div class="row">
-  <div class="col-md-8">
-    {control segmentForm}
-  </div>
+  {if $version == 2}
+    <div class="col-md-12">
+      <div class="col-md-12">
+        <p>
+          {capture $segmentLink}<a n:href="new version => 1">{_segment.edit.old_version_link}</a>{/capture}
+          {_segment.edit.new_version, ['link' => $segmentLink]|noescape}
+        </p>
+        <iframe id="outside" src="{link embed}" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" height="100" style="border: 0px; overflow: hidden; background: transparent; height: 980px; width:100%"></iframe>
+        <script type="text/javascript" src="/layouts/default/js/iframeResizer.min.js"></script>
+        <script>
+            $(window).load(function() {
+                iFrameResize({ log: false, heightCalculationMethod: 'max' }, '#outside');
+            });
+        </script>
+      </div>
+    </div>
+  {else}
+    <div class="col-md-8">
+      <p>
+        {capture $segmentLink}<a n:href="new version => 2">{_segment.edit.new_version_link}</a>{/capture}
+        {_segment.edit.old_version, ['link' => $segmentLink]|noescape}
+      </p>
+      {control segmentForm}
+    </div>
+  {/if}
 </div>

@@ -103,6 +103,11 @@ class Generator
                 }
             }
         }
+        return [
+            'where' => "",
+            'join' => [],
+            'fields' => [],
+        ];
     }
 
     public function process(string $table, array $params): string
@@ -151,7 +156,10 @@ class Generator
             $availableFields = $this->criteriaStorage->getTableFields($table);
             foreach ($params['fields'] as $field) {
                 if (in_array($field, $availableFields) && !in_array($field, $defaultFields)) {
-                    $tableFields[] = "{$table}.{$field}";
+                    $tableField = "{$table}.{$field}";
+                    if (!in_array($tableField, $tableFields)) {
+                        $tableFields[] = $tableField;
+                    }
                 }
             }
         }

@@ -52,6 +52,14 @@ show:
 edit:
 	title: Uprav segment %name%
 	header: Uprav segment
+	new_version: Toto je nový vizuálny editor pre úpravu segmentov. Stále je možné použiť %link%.
+	old_version_link: starú verziu
+	old_version: Toto je stará verzia formuláru pre úpravu segmentov. Vyskúšajte %link%.
+	new_version_link: novú verziu
 
 new:
 	header: Nový segment
+	new_version: Toto je nový vizuálny editor pre vytvárnie segmentov. Stále je možné použiť %link%.
+	old_version_link: starú verziu
+	old_version: Toto je stará verzia formuláru pre vytváranie segmentov. Vyskúšajte %link%.
+	new_version_link: novú verziu
