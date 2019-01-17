@@ -17,4 +17,10 @@ class SegmentsValuesRepository extends Repository
             'value' => $value,
         ]);
     }
+
+    public function segment($code)
+    {
+        return $this->getTable()
+            ->where('segment.code', $code);
+    }
 }
