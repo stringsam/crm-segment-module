@@ -54,13 +54,16 @@ class UpdateCountsCommand extends Command
         $output->writeln('');
 
         foreach ($this->segmentsRepository->all() as $segmentRow) {
+            $output->write("Updating count for segment <info>{$segmentRow->code}</info>: ");
+            $startTime = microtime(true);
             $segment = $this->segmentFactory->buildSegment($segmentRow->code);
             $count = $segment->totalCount();
+            $endTime = microtime(true);
             $this->segmentsRepository->update($segmentRow, ['cache_count' => $count]);
 
             $this->segmentsValuesRepository->add($segmentRow, new DateTime(), $count);
 
-            $output->writeln("Actualized segment <info>{$segmentRow->code}</info>");
+            $output->writeln("OK (" . round($endTime - $startTime, 2) . "s)");
         }
     }
 }
