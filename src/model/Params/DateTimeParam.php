@@ -42,9 +42,9 @@ class DateTimeParam extends BaseParam
     private function formatOperator(string $operator, string $value, string $key1, $key2 = null): string
     {
         if ($operator == 'gt') {
-            return " {$key1} > {$value} ";
+            return " " . ($key2 ?? $key1) . " > {$value} ";
         } elseif ($operator == 'gte') {
-            return " {$key1} >= {$value} ";
+            return " " . ($key2 ?? $key1) . " >= {$value} ";
         } elseif ($operator == 'lt') {
             return " {$key1} < {$value} ";
         } elseif ($operator == 'lte') {
@@ -85,11 +85,16 @@ class DateTimeParam extends BaseParam
                 $expression = 'NOW()';
             } else {
                 $value = intval($interval['value']);
-                if ($value > 0) {
+                if ($value >= 0 && !$key2) {
                     $intervalOperator = "+";
-                } else {
+                } elseif ($value < 0 && !$key2) {
                     $intervalOperator = "-";
                     $value = -$value;
+                } elseif ($value < 0 && $key2) {
+                    $intervalOperator = "-";
+                    $value = -$value;
+                } elseif ($value >= 0 && $key2) {
+                    $intervalOperator = "+";
                 }
                 $expression = " NOW() {$intervalOperator} INTERVAL {$value} {$unit}";
             }
