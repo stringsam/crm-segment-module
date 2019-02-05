@@ -160,7 +160,6 @@ class DateTimeParam extends BaseParam
                 break;
             default:
                 throw new \Exception('unhandled DateTimeParam type when calling inverse() method');
-
         }
 
         $inversed->setData($data);
