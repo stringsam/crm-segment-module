@@ -126,6 +126,47 @@ class DateTimeParam extends BaseParam
         return new Validation();
     }
 
+    /**
+     * Inverse is meant to be used in combination with generated NOT IN () queries.
+     * It inverses time conditions in a way that it includes complement of date range
+     * requested in params data.
+     *
+     * @return DateTimeParam
+     * @throws \Crm\SegmentModule\Criteria\InvalidCriteriaException
+     */
+    public function inverse(): DateTimeParam
+    {
+        $inversed = (clone $this);
+
+        switch ($this->data['type']) {
+            case self::TYPE_ABSOLUTE:
+            case self::TYPE_INTERVAL:
+                $data = [
+                    'type' => $this->data['type'],
+                    $this->data['type'] => [],
+                ];
+                foreach ($inversed->data[$this->data['type']] as $key => $_) {
+                    if ($key === "gt") {
+                        $key = "lte";
+                    } elseif ($key === "gte") {
+                        $key = "lt";
+                    } elseif ($key === "lt") {
+                        $key = "gte";
+                    } elseif ($key === "lte") {
+                        $key = "gt";
+                    }
+                    $data[$this->data['type']][$key] = $_;
+                }
+                break;
+            default:
+                throw new \Exception('unhandled DateTimeParam type when calling inverse() method');
+
+        }
+
+        $inversed->setData($data);
+        return $inversed;
+    }
+
     private function validAbsolute($data): Validation
     {
         if (!is_array($data)) {
