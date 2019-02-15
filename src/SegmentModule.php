@@ -63,7 +63,7 @@ class SegmentModule extends CrmModule
             new ApiRoute(
                 new ApiIdentifier('1', 'segments', 'groups'),
                 \Crm\SegmentModule\Api\ListGroupsHandler::class,
-                \Crm\ApiModule\Authorization\BearerTokenAuthorization::class
+                \Crm\ApiModule\Authorization\AdminLoggedAuthorization::class
             )
         );
 
@@ -71,7 +71,7 @@ class SegmentModule extends CrmModule
             new ApiRoute(
                 new ApiIdentifier('1', 'segments', 'criteria'),
                 \Crm\SegmentModule\Api\CriteriaHandler::class,
-                \Crm\ApiModule\Authorization\BearerTokenAuthorization::class
+                \Crm\ApiModule\Authorization\AdminLoggedAuthorization::class
             )
         );
 
@@ -79,7 +79,7 @@ class SegmentModule extends CrmModule
             new ApiRoute(
                 new ApiIdentifier('1', 'segments', 'detail'),
                 \Crm\SegmentModule\Api\CreateOrUpdateSegmentHandler::class,
-                \Crm\ApiModule\Authorization\BearerTokenAuthorization::class
+                \Crm\ApiModule\Authorization\AdminLoggedAuthorization::class
             )
         );
 
@@ -87,7 +87,7 @@ class SegmentModule extends CrmModule
             new ApiRoute(
                 new ApiIdentifier('1', 'segments', 'show'),
                 \Crm\SegmentModule\Api\ShowSegmentHandler::class,
-                \Crm\ApiModule\Authorization\BearerTokenAuthorization::class
+                \Crm\ApiModule\Authorization\AdminLoggedAuthorization::class
             )
         );
 
@@ -95,7 +95,7 @@ class SegmentModule extends CrmModule
             new ApiRoute(
                 new ApiIdentifier('1', 'segments', 'counts'),
                 \Crm\SegmentModule\Api\CountsHandler::class,
-                \Crm\ApiModule\Authorization\BearerTokenAuthorization::class
+                \Crm\ApiModule\Authorization\AdminLoggedAuthorization::class
             )
         );
 
@@ -103,7 +103,7 @@ class SegmentModule extends CrmModule
             new ApiRoute(
                 new ApiIdentifier('1', 'segments', 'related'),
                 \Crm\SegmentModule\Api\RelatedHandler::class,
-                \Crm\ApiModule\Authorization\BearerTokenAuthorization::class
+                \Crm\ApiModule\Authorization\AdminLoggedAuthorization::class
             )
         );
     }
