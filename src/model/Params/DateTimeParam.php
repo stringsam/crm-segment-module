@@ -42,9 +42,9 @@ class DateTimeParam extends BaseParam
     private function formatOperator(string $operator, string $value, string $key1, $key2 = null): string
     {
         if ($operator == 'gt') {
-            return " {$key1} > {$value} ";
+            return " " . ($key2 ?? $key1) . " > {$value} ";
         } elseif ($operator == 'gte') {
-            return " {$key1} >= {$value} ";
+            return " " . ($key2 ?? $key1) . " >= {$value} ";
         } elseif ($operator == 'lt') {
             return " {$key1} < {$value} ";
         } elseif ($operator == 'lte') {
@@ -85,11 +85,16 @@ class DateTimeParam extends BaseParam
                 $expression = 'NOW()';
             } else {
                 $value = intval($interval['value']);
-                if ($value > 0) {
+                if ($value >= 0 && !$key2) {
                     $intervalOperator = "+";
-                } else {
+                } elseif ($value < 0 && !$key2) {
                     $intervalOperator = "-";
                     $value = -$value;
+                } elseif ($value < 0 && $key2) {
+                    $intervalOperator = "-";
+                    $value = -$value;
+                } elseif ($value >= 0 && $key2) {
+                    $intervalOperator = "+";
                 }
                 $expression = " NOW() {$intervalOperator} INTERVAL {$value} {$unit}";
             }
@@ -119,6 +124,46 @@ class DateTimeParam extends BaseParam
         }
 
         return new Validation();
+    }
+
+    /**
+     * Inverse is meant to be used in combination with generated NOT IN () queries.
+     * It inverses time conditions in a way that it includes complement of date range
+     * requested in params data.
+     *
+     * @return DateTimeParam
+     * @throws \Crm\SegmentModule\Criteria\InvalidCriteriaException
+     */
+    public function inverse(): DateTimeParam
+    {
+        $inversed = (clone $this);
+
+        switch ($this->data['type']) {
+            case self::TYPE_ABSOLUTE:
+            case self::TYPE_INTERVAL:
+                $data = [
+                    'type' => $this->data['type'],
+                    $this->data['type'] => [],
+                ];
+                foreach ($inversed->data[$this->data['type']] as $key => $_) {
+                    if ($key === "gt") {
+                        $key = "lte";
+                    } elseif ($key === "gte") {
+                        $key = "lt";
+                    } elseif ($key === "lt") {
+                        $key = "gte";
+                    } elseif ($key === "lte") {
+                        $key = "gt";
+                    }
+                    $data[$this->data['type']][$key] = $_;
+                }
+                break;
+            default:
+                throw new \Exception('unhandled DateTimeParam type when calling inverse() method');
+        }
+
+        $inversed->setData($data);
+        return $inversed;
     }
 
     private function validAbsolute($data): Validation
