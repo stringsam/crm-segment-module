@@ -141,7 +141,11 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
             );
         }
 
-        $response = new JsonResponse(['status' => 'ok', 'id' => $segment->id]);
+        $response = new JsonResponse([
+            'status' => 'ok',
+            'id' => $segment->id,
+            'code' => $segment->code,
+        ]);
         $response->setHttpCode(Response::S200_OK);
         return $response;
     }
