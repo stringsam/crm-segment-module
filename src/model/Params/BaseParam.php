@@ -106,4 +106,10 @@ abstract class BaseParam
         return DateTime::createFromFormat("Y-m-d\TH:i:s.uP", $date) !== false
             || DateTime::createFromFormat(DateTime::RFC3339, $date) !== false;
     }
+
+    protected function escapeKey($key)
+    {
+        $key = str_replace('.', '`.`', $key);
+        return "`{$key}`";
+    }
 }
