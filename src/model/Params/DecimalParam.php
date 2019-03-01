@@ -9,7 +9,9 @@ class DecimalParam extends BaseParam
     public function escapedConditions($key): array
     {
         $where = [];
+        $key = $this->escapeKey($key);
         foreach ($this->data as $operator => $value) {
+            $value = floatval($value);
             if ($operator == 'gt') {
                 $where[] = " {$key} > {$value} ";
             } elseif ($operator == 'gte') {
