@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CompressSegmentsValues extends Command
 {
+    const COMPRESSION_THRESHOLD = '3 months';
+
     private $segmentsValuesRepository;
 
     public function __construct(
@@ -39,11 +41,11 @@ class CompressSegmentsValues extends Command
 
         /** @var DateTime $minDate */
         $minDate = $min->min_date;
-        $maxDate = (new DateTime())->sub(DateInterval::createFromDateString('3 months'));
+        $maxDate = (new DateTime())->sub(DateInterval::createFromDateString(self::COMPRESSION_THRESHOLD));
 
         $output->writeln('Checking if segments_values table contains uncompressed values');
 
-        // Bisect to select earliest date where compression has to start
+        // Bisect search to select earliest date where compression should start
         $earliestUncompressedDate = $this->findEarliestUncompressed(clone $minDate, clone $maxDate);
         if (!$earliestUncompressedDate) {
             $output->writeln('No segments values to compress, quitting.');
@@ -83,17 +85,13 @@ class CompressSegmentsValues extends Command
 
     private function hasCompression(DateTime $midDate): bool
     {
-        $sql = <<<SQL
-select count(*) uncompressed_count from (
-    select count(*)
-    from    segments_values
-    where DATE(`date`) = ? 
-    group by HOUR(`date`), segment_id
-    having count(*) > 1
-) t
-SQL;
-        $res = $this->segmentsValuesRepository->getDatabase()->fetch($sql, $midDate->format('Y-m-d'));
-        $uncompressedCount = (int) $res->uncompressed_count;
+        $uncompressedCount = $this->segmentsValuesRepository->getTable()
+            ->select('COUNT(*)')
+            ->where('DATE(`date`) = ?', $midDate->format('Y-m-d'))
+            ->group('HOUR(`date`), segment_id')
+            ->having('COUNT(*) > 1')
+            ->count();
+
         return $uncompressedCount === 0;
     }
 
