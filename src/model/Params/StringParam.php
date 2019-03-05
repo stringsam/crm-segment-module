@@ -6,9 +6,9 @@ class StringParam extends BaseParam
 {
     protected $type = 'string';
 
-    public function value(): string
+    public function escapedString(): string
     {
-        return $this->data;
+        return "'" . addslashes($this->data) . "'";
     }
 
     public function isValid($data): Validation
@@ -25,6 +25,6 @@ class StringParam extends BaseParam
         if (!($param instanceof static)) {
             throw new \Exception("Cannot compare " . get_class($param) . ' with StringParam');
         }
-        return $param->value() == $this->value();
+        return $param->escapedString() == $this->escapedString();
     }
 }
