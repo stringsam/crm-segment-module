@@ -58,13 +58,6 @@ class Generator
                 $criteria = $tableCriteria[$param['key']];
                 $paramBag = $this->buildParamBag($criteria, $param['values']);
                 $join = $criteria->join($paramBag);
-                if (isset($param['negation']) && $param['negation'] == true) {
-                    $matches = null;
-                    preg_match('/WHERE (.*)/', $join, $matches);
-                    if (isset($matches[1])) {
-                        $join = str_replace($matches[1], 'NOT (' . $matches[1] . ')', $join);
-                    }
-                }
 
                 $fields = [];
                 if (isset($param['fields'])) {
@@ -73,8 +66,13 @@ class Generator
                     }
                 }
 
+                $whereCondition = "IS NOT NULL";
+                if (isset($param['negation']) && $param['negation'] == true) {
+                    $whereCondition = "IS NULL";
+                }
+
                 return [
-                    'where' => "t{$prefix}.id IS NOT NULL",
+                    'where' => "t{$prefix}.id {$whereCondition}",
                     'join' => ["LEFT JOIN ({$join}) AS t{$prefix} ON t{$prefix}.id = %table%.id"],
                     'fields' => $fields,
                 ];
