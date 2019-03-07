@@ -7,12 +7,11 @@ use DateInterval;
 use Nette\Utils\DateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CompressSegmentsValues extends Command
 {
-    const COMPRESSION_THRESHOLD = '3 months';
-
     private $segmentsValuesRepository;
 
     public function __construct(
@@ -24,7 +23,18 @@ class CompressSegmentsValues extends Command
 
     protected function configure()
     {
-        $this->setName('segment:compress_segments_values');
+        $this->setName('segment:compress_segments_values')
+            ->addOption(
+                'from',
+                null,
+                InputOption::VALUE_REQUIRED
+            )
+            ->addOption(
+                'to',
+                null,
+                InputOption::VALUE_REQUIRED
+            )
+            ->setDescription('Compress segments values (in given dates interval) by keeping only one value per hour for each segment.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -33,101 +43,56 @@ class CompressSegmentsValues extends Command
         $output->writeln('<info>***** COMPRESSING SEGMENTS VALUES *****</info>');
         $output->writeln('');
 
-        $min = $this->segmentsValuesRepository->getTable()->select('MIN(`date`) min_date')->fetch();
-        if (!$min) {
-            $output->writeln('No segments values to compress, quitting.');
+        $fromString = $input->getOption('from');
+        if (! $fromString) {
+            $output->writeln('Required option --from=DATE is missing');
+            return;
+        }
+        $from = DateTime::createFromFormat('Y-m-d', $fromString)->setTime(0, 0, 0, 0);
+        if (! $from) {
+            $output->writeln("$fromString is not a valid date, accepted format is YYYY-MM-DD.");
             return;
         }
 
-        /** @var DateTime $minDate */
-        $minDate = $min->min_date;
-        $maxDate = (new DateTime())->sub(DateInterval::createFromDateString(self::COMPRESSION_THRESHOLD));
-
-        $output->writeln('Checking if segments_values table contains uncompressed values');
-
-        // Bisect search to select earliest date where compression should start
-        $earliestUncompressedDate = $this->findEarliestUncompressed(clone $minDate, clone $maxDate);
-        if (!$earliestUncompressedDate) {
-            $output->writeln('No segments values to compress, quitting.');
+        $toString = $input->getOption('to');
+        if (! $toString) {
+            $output->writeln('Required option --to=DATE is missing');
+            return;
+        }
+        $to = DateTime::createFromFormat('Y-m-d', $toString)->setTime(0, 0, 0, 0);
+        if (! $to) {
+            $output->writeln("$toString is not a valid date, accepted format is YYYY-MM-DD.");
             return;
         }
 
-        $totalDeleted = $this->compress($earliestUncompressedDate, $maxDate, $output);
+        $oneDay = DateInterval::createFromDateString('1 day');
+
+        $dayIterator = clone $from;
+
+        $totalDeleted = 0;
+
+        while ($dayIterator <= $to) {
+            $output->writeln($dayIterator);
+            $totalDeleted += $this->compress($dayIterator, $output);
+            $dayIterator = $dayIterator->add($oneDay);
+        }
 
         $output->writeln("Compressing finished, $totalDeleted record(s) deleted.");
     }
 
-    private function findEarliestUncompressed(DateTime $left, DateTime $right)
+    private function compress(DateTime $day, OutputInterface $output): int
     {
-        $left->setTime(0, 0, 0, 0);
-        $right->setTime(0, 0, 0, 0);
+        $output->writeln("Compressing values for $day");
 
-        if ($left > $right) {
-            return false;
-        }
-
-        if ($left == $right && !$this->hasCompression($left)) {
-            return $left;
-        }
-
-        // Compute mid date
-        $midPoint = (int) (($left->getTimestamp() + $right->getTimestamp())/2);
-        $midDate = DateTime::from($midPoint)->setTime(0, 0, 0, 0);
-
-        $oneDay = DateInterval::createFromDateString('1 day');
-
-        // Check if mid date has compressed values and decide which half-interval to explore next
-        if ($this->hasCompression($midDate)) {
-            return $this->findEarliestUncompressed($midDate->add($oneDay), $right);
-        }
-        return $this->findEarliestUncompressed($left, $midDate);
-    }
-
-    private function hasCompression(DateTime $midDate): bool
-    {
-        $uncompressedCount = $this->segmentsValuesRepository->getTable()
-            ->select('COUNT(*)')
-            ->where('DATE(`date`) = ?', $midDate->format('Y-m-d'))
+        $ids = $this->segmentsValuesRepository->getTable()
+            ->select('MIN(id) AS id')
+            ->where('DATE(`date`) = ?', $day)
             ->group('HOUR(`date`), segment_id')
-            ->having('COUNT(*) > 1')
-            ->count();
+            ->fetchAssoc('id=id');
 
-        return $uncompressedCount === 0;
-    }
-
-    private function compress(DateTime $start, DateTime $end, OutputInterface $output): int
-    {
-        $deleteSql = <<<SQL
-delete s1 from segments_values s1
-left join (
-    
-    select min(id) as id
-    from    segments_values
-    where `date` >= ? and `date` <= ?
-    group by DATE(`date`), HOUR(`date`), segment_id
-
-) s2 on s1.id = s2.id
-where `date` >= ? and `date` <= ? and s2.id is null
-SQL;
-
-        $iteratorStart = clone $start;
-        $interval = DateInterval::createFromDateString('2 weeks');
-
-        $totalDeleted = 0;
-
-        while ($iteratorStart < $end) {
-            $iteratorEnd = (clone $iteratorStart)->add($interval);
-
-            $output->writeln("Compressing values between $iteratorStart and $iteratorEnd");
-
-            $results = $this->segmentsValuesRepository
-                ->getDatabase()
-                ->query($deleteSql, $iteratorStart, $iteratorEnd, $iteratorStart, $iteratorEnd);
-            $totalDeleted += $results->getRowCount();
-
-            $iteratorStart->add($interval);
-        }
-
-        return $totalDeleted;
+        return $this->segmentsValuesRepository->getTable()
+            ->where('DATE(`date`) = ?', $day)
+            ->where('id NOT IN (?)', $ids)
+            ->delete();
     }
 }
