@@ -90,6 +90,10 @@ class CompressSegmentsValues extends Command
             ->group('HOUR(`date`), segment_id')
             ->fetchAssoc('id=id');
 
+        if (empty($ids)) {
+            return 0;
+        }
+
         return $this->segmentsValuesRepository->getTable()
             ->where('DATE(`date`) = ?', $day)
             ->where('id NOT IN (?)', $ids)
