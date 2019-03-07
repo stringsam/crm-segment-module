@@ -72,7 +72,6 @@ class CompressSegmentsValues extends Command
         $totalDeleted = 0;
 
         while ($dayIterator <= $to) {
-            $output->writeln($dayIterator);
             $totalDeleted += $this->compress($dayIterator, $output);
             $dayIterator = $dayIterator->add($oneDay);
         }
