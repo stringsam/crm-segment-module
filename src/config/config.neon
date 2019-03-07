@@ -9,6 +9,7 @@ services:
 	- Crm\SegmentModule\SegmentFactory
 	- Crm\SegmentModule\Commands\UpdateCountsCommand
 	- Crm\SegmentModule\Commands\ProcessCriteriaSegmentsCommand
+	- Crm\SegmentModule\Commands\CompressSegmentsValues
 	- Crm\SegmentModule\Forms\SegmentFormFactory
 	- Crm\SegmentModule\Api\ListApiHandler
 	- Crm\SegmentModule\Api\UsersApiHandler
