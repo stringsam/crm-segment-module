@@ -8,8 +8,14 @@ class NumberParam extends BaseParam
 
     public function escapedConditions($key): array
     {
+        return $this->conditions($this->escapeKey($key));
+    }
+
+    public function conditions($key): array
+    {
         $where = [];
         foreach ($this->data as $operator => $value) {
+            $value = intval($value);
             if ($operator == 'gt') {
                 $where[] = " {$key} > {$value} ";
             } elseif ($operator == 'gte') {
