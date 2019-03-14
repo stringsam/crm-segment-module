@@ -31,6 +31,7 @@ class SegmentModule extends CrmModule
     {
         $commandsContainer->registerCommand($this->getInstance(\Crm\SegmentModule\Commands\UpdateCountsCommand::class));
         $commandsContainer->registerCommand($this->getInstance(\Crm\SegmentModule\Commands\ProcessCriteriaSegmentsCommand::class));
+        $commandsContainer->registerCommand($this->getInstance(\Crm\SegmentModule\Commands\CompressSegmentsValues::class));
     }
 
     public function registerApiCalls(ApiRoutersContainerInterface $apiRoutersContainer)
