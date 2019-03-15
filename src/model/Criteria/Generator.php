@@ -134,34 +134,23 @@ class Generator
         return $blueprint;
     }
 
-    public function getFields(string $table, array $fields, array $nodes): array
+    public function getFields(string $table, array $userFields, array $nodes): array
     {
         $tableCriteria = $this->criteriaStorage->getTableCriteria($table);
         if (empty($tableCriteria)) {
             throw new EmptyCriteriaException("Unknown table or empty criteria list for table '{$table}'");
         }
 
-        $tableFields = [];
-
-        // process default table fields (included in every segment)
         $defaultFields = $this->criteriaStorage->getDefaultTableFields($table);
-        foreach ($defaultFields as $field) {
-            $prefixedField = "{$table}.$field";
-            $tableFields[$prefixedField] = $prefixedField;
-            // remove default field from $fields so it's not handled again in tableFields
-            $fields = array_diff($fields, [$prefixedField]);
-        }
+        $tableFields = $this->criteriaStorage->getTableFields($table);
 
-        // process available table fields (optionally included in segments)
-        $availableFields = $this->criteriaStorage->getTableFields($table);
-        foreach ($fields as $i => $field) {
-            // skip fields that are not exported by table anymore
-            if (!in_array($field, $availableFields)) {
-                continue;
-            }
+        // validate userFields against available tableFields; select only available
+        $fields = array_unique(array_merge($defaultFields, array_intersect($tableFields, $userFields)));
 
-            $prefixedField = "{$table}.{$field}";
-            $tableFields[$prefixedField] = $prefixedField;
+        // prefix
+        $prefixedFields = [];
+        foreach($fields as $field) {
+            $prefixedFields[] = "{$table}.{$field}";
         }
 
         $output = $this->processNodes($tableCriteria, $table, $nodes, 0);
@@ -170,7 +159,7 @@ class Generator
         // be returned anymore.
 
         return array_merge(
-            array_values($tableFields),
+            $prefixedFields,
             $output['fields']
         );
     }
