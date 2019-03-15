@@ -87,7 +87,7 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
             if (!isset($params['name'])) {
                 $params['name'] = $this->generator->generateName($params['table_name'], $params['criteria']);
             }
-            $fields = $this->generator->getFields($params['table_name'], $params['criteria']);
+            $fields = $this->generator->getFields($params['table_name'], $params['fields'], $params['criteria']);
         } catch (EmptyCriteriaException $emptyCriteriaException) {
             $response = new JsonResponse(['status' => 'error', 'message' => $emptyCriteriaException->getMessage()]);
             $response->setHttpCode(Response::S400_BAD_REQUEST);
@@ -98,12 +98,6 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
             return $response;
         }
 
-        // prepare data for internal store
-        foreach ($params['fields'] as $field) {
-            if (!in_array($field, $fields)) {
-                $fields[] = $field;
-            }
-        }
         $params['fields'] = implode(',', $fields);
         $params['criteria'] = JSON::encode($params['criteria']);
 
