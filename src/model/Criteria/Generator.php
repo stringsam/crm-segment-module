@@ -134,33 +134,35 @@ class Generator
         return $blueprint;
     }
 
-    public function getFields(string $table, array $params): array
+    public function getFields(string $table, array $fields, array $criteria): array
     {
         $tableCriteria = $this->criteriaStorage->getTableCriteria($table);
         if (empty($tableCriteria)) {
             throw new EmptyCriteriaException("Unknown table or empty criteria list for table '{$table}'");
         }
 
-        $output = $this->processNodes($tableCriteria, $table, $params['nodes'], 0);
+        $output = $this->processNodes($tableCriteria, $table, $criteria['nodes'], 0);
 
         $tableFields = [];
         $defaultFields = $this->criteriaStorage->getDefaultTableFields($table);
         foreach ($defaultFields as $field) {
             $tableFields[] = "{$table}.$field";
+            // remove default field from $fields so it's not handled again in tableFields
+            $fields = array_diff($fields, ["{$table}.$field"]);
         }
-        if (!isset($params['fields'])) {
-            $params['fields'] = [];
-        } else {
-            $availableFields = $this->criteriaStorage->getTableFields($table);
-            foreach ($params['fields'] as $field) {
-                if (in_array($field, $availableFields) && !in_array($field, $defaultFields)) {
-                    $tableField = "{$table}.{$field}";
-                    if (!in_array($tableField, $tableFields)) {
-                        $tableFields[] = $tableField;
-                    }
+
+        $availableFields = $this->criteriaStorage->getTableFields($table);
+        foreach ($fields as $i => $field) {
+            if (in_array($field, $availableFields) && !in_array($field, $defaultFields)) {
+                $tableField = "{$table}.{$field}";
+                if (!in_array($tableField, $tableFields)) {
+                    $tableFields[] = $tableField;
                 }
             }
         }
+
+        // Intentionally leaving out remaining $fields as they were unregistered from table fields and shouldn't
+        // be returned anymore.
 
         return array_merge($tableFields, $output['fields']);
     }
