@@ -134,37 +134,45 @@ class Generator
         return $blueprint;
     }
 
-    public function getFields(string $table, array $fields, array $criteria): array
+    public function getFields(string $table, array $fields, array $nodes): array
     {
         $tableCriteria = $this->criteriaStorage->getTableCriteria($table);
         if (empty($tableCriteria)) {
             throw new EmptyCriteriaException("Unknown table or empty criteria list for table '{$table}'");
         }
 
-        $output = $this->processNodes($tableCriteria, $table, $criteria['nodes'], 0);
-
         $tableFields = [];
+
+        // process default table fields (included in every segment)
         $defaultFields = $this->criteriaStorage->getDefaultTableFields($table);
         foreach ($defaultFields as $field) {
-            $tableFields[] = "{$table}.$field";
+            $prefixedField = "{$table}.$field";
+            $tableFields[$prefixedField] = $prefixedField;
             // remove default field from $fields so it's not handled again in tableFields
-            $fields = array_diff($fields, ["{$table}.$field"]);
+            $fields = array_diff($fields, [$prefixedField]);
         }
 
+        // process available table fields (optionally included in segments)
         $availableFields = $this->criteriaStorage->getTableFields($table);
         foreach ($fields as $i => $field) {
-            if (in_array($field, $availableFields) && !in_array($field, $defaultFields)) {
-                $tableField = "{$table}.{$field}";
-                if (!in_array($tableField, $tableFields)) {
-                    $tableFields[] = $tableField;
-                }
+            // skip fields that are not exported by table anymore
+            if (!in_array($field, $availableFields)) {
+                continue;
             }
+
+            $prefixedField = "{$table}.{$field}";
+            $tableFields[$prefixedField] = $prefixedField;
         }
+
+        $output = $this->processNodes($tableCriteria, $table, $nodes, 0);
 
         // Intentionally leaving out remaining $fields as they were unregistered from table fields and shouldn't
         // be returned anymore.
 
-        return array_merge($tableFields, $output['fields']);
+        return array_merge(
+            array_values($tableFields),
+            $output['fields']
+        );
     }
 
     public function generateName(string $table, array $params)
