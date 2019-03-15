@@ -87,7 +87,7 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
             if (!isset($params['name'])) {
                 $params['name'] = $this->generator->generateName($params['table_name'], $params['criteria']);
             }
-            $fields = $this->generator->getFields($params['table_name'], $params['fields'], $params['criteria']);
+            $fields = $this->generator->getFields($params['table_name'], $params['fields'], $params['criteria']['nodes']);
         } catch (EmptyCriteriaException $emptyCriteriaException) {
             $response = new JsonResponse(['status' => 'error', 'message' => $emptyCriteriaException->getMessage()]);
             $response->setHttpCode(Response::S400_BAD_REQUEST);
