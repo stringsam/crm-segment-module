@@ -149,7 +149,7 @@ class Generator
 
         // prefix
         $prefixedFields = [];
-        foreach($fields as $field) {
+        foreach ($fields as $field) {
             $prefixedFields[] = "{$table}.{$field}";
         }
 
