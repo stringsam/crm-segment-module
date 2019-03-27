@@ -13,6 +13,11 @@ class DateTimeParam extends BaseParam
 
     public function escapedConditions(string $key1, string $key2 = null): array
     {
+        $key1 = $this->escapeKey($key1);
+        if ($key2) {
+            $key2 = $this->escapeKey($key2);
+        }
+
         if ($this->data['type'] == self::TYPE_ABSOLUTE) {
             return $this->absoluteWhere($key1, $key2);
         }

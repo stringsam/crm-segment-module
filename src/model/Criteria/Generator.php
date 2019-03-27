@@ -58,13 +58,6 @@ class Generator
                 $criteria = $tableCriteria[$param['key']];
                 $paramBag = $this->buildParamBag($criteria, $param['values']);
                 $join = $criteria->join($paramBag);
-                if (isset($param['negation']) && $param['negation'] == true) {
-                    $matches = null;
-                    preg_match('/WHERE (.*)/', $join, $matches);
-                    if (isset($matches[1])) {
-                        $join = str_replace($matches[1], 'NOT (' . $matches[1] . ')', $join);
-                    }
-                }
 
                 $fields = [];
                 if (isset($param['fields'])) {
@@ -73,8 +66,13 @@ class Generator
                     }
                 }
 
+                $whereCondition = "IS NOT NULL";
+                if (isset($param['negation']) && $param['negation'] == true) {
+                    $whereCondition = "IS NULL";
+                }
+
                 return [
-                    'where' => "t{$prefix}.id IS NOT NULL",
+                    'where' => "t{$prefix}.id {$whereCondition}",
                     'join' => ["LEFT JOIN ({$join}) AS t{$prefix} ON t{$prefix}.id = %table%.id"],
                     'fields' => $fields,
                 ];
@@ -136,35 +134,34 @@ class Generator
         return $blueprint;
     }
 
-    public function getFields(string $table, array $params): array
+    public function getFields(string $table, array $userFields, array $nodes): array
     {
         $tableCriteria = $this->criteriaStorage->getTableCriteria($table);
         if (empty($tableCriteria)) {
             throw new EmptyCriteriaException("Unknown table or empty criteria list for table '{$table}'");
         }
 
-        $output = $this->processNodes($tableCriteria, $table, $params['nodes'], 0);
-
-        $tableFields = [];
         $defaultFields = $this->criteriaStorage->getDefaultTableFields($table);
-        foreach ($defaultFields as $field) {
-            $tableFields[] = "{$table}.$field";
-        }
-        if (!isset($params['fields'])) {
-            $params['fields'] = [];
-        } else {
-            $availableFields = $this->criteriaStorage->getTableFields($table);
-            foreach ($params['fields'] as $field) {
-                if (in_array($field, $availableFields) && !in_array($field, $defaultFields)) {
-                    $tableField = "{$table}.{$field}";
-                    if (!in_array($tableField, $tableFields)) {
-                        $tableFields[] = $tableField;
-                    }
-                }
-            }
+        $tableFields = $this->criteriaStorage->getTableFields($table);
+
+        // validate userFields against available tableFields; select only available
+        $fields = array_unique(array_merge($defaultFields, array_intersect($tableFields, $userFields)));
+
+        // prefix
+        $prefixedFields = [];
+        foreach ($fields as $field) {
+            $prefixedFields[] = "{$table}.{$field}";
         }
 
-        return array_merge($tableFields, $output['fields']);
+        $output = $this->processNodes($tableCriteria, $table, $nodes, 0);
+
+        // Intentionally leaving out remaining $fields as they were unregistered from table fields and shouldn't
+        // be returned anymore.
+
+        return array_merge(
+            $prefixedFields,
+            $output['fields']
+        );
     }
 
     public function generateName(string $table, array $params)

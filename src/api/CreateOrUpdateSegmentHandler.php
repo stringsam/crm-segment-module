@@ -10,8 +10,8 @@ use Crm\ApiModule\Params\ParamsProcessor;
 use Crm\SegmentModule\Criteria\EmptyCriteriaException;
 use Crm\SegmentModule\Criteria\Generator;
 use Crm\SegmentModule\Criteria\InvalidCriteriaException;
+use Crm\SegmentModule\Repository\SegmentGroupsRepository;
 use Crm\SegmentModule\Repository\SegmentsRepository;
-use Crm\UsersModule\Repository\GroupsRepository;
 use Nette\Http\Response;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
@@ -21,17 +21,17 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
 {
     private $segmentsRepository;
 
-    private $groupsRepository;
+    private $segmentGroupsRepository;
 
     private $generator;
 
     public function __construct(
         SegmentsRepository $segmentsRepository,
-        GroupsRepository $groupsRepository,
+        SegmentGroupsRepository $segmentGroupsRepository,
         Generator $generator
     ) {
         $this->segmentsRepository = $segmentsRepository;
-        $this->groupsRepository = $groupsRepository;
+        $this->segmentGroupsRepository = $segmentGroupsRepository;
         $this->generator = $generator;
     }
 
@@ -71,7 +71,7 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
         }
         $params = $json + $paramsProcessor->getValues();
 
-        $group = $this->groupsRepository->find($params['group_id']);
+        $group = $this->segmentGroupsRepository->find($params['group_id']);
         if (!$group) {
             $response = new JsonResponse(['status' => 'error', 'message' => 'Segment group not found']);
             $response->setHttpCode(Response::S404_NOT_FOUND);
@@ -87,7 +87,7 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
             if (!isset($params['name'])) {
                 $params['name'] = $this->generator->generateName($params['table_name'], $params['criteria']);
             }
-            $fields = $this->generator->getFields($params['table_name'], $params['criteria']);
+            $fields = $this->generator->getFields($params['table_name'], $params['fields'], $params['criteria']['nodes']);
         } catch (EmptyCriteriaException $emptyCriteriaException) {
             $response = new JsonResponse(['status' => 'error', 'message' => $emptyCriteriaException->getMessage()]);
             $response->setHttpCode(Response::S400_BAD_REQUEST);
@@ -98,12 +98,6 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
             return $response;
         }
 
-        // prepare data for internal store
-        foreach ($params['fields'] as $field) {
-            if (!in_array($field, $fields)) {
-                $fields[] = $field;
-            }
-        }
         $params['fields'] = implode(',', $fields);
         $params['criteria'] = JSON::encode($params['criteria']);
 
@@ -141,7 +135,11 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
             );
         }
 
-        $response = new JsonResponse(['status' => 'ok', 'id' => $segment->id]);
+        $response = new JsonResponse([
+            'status' => 'ok',
+            'id' => $segment->id,
+            'code' => $segment->code,
+        ]);
         $response->setHttpCode(Response::S200_OK);
         return $response;
     }

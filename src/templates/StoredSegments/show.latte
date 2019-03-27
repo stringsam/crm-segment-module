@@ -46,7 +46,7 @@
       <div class="panel-heading">{_segment.show.stats}</div>
       <ul class="list-group">
           <li class="list-group-item"><b>{_segment.fields.rows}:</b> ~{$segment->cache_count} {_('segment.fields.rows_help')|helpIcon|noescape}</li>
-        <li n:ifset="$avgMonthPayment" class="list-group-item"><b>{_segment.fields.avg_month_payment}:</b> {$avgMonthPayment|number:2} €</li>
+        <li n:ifset="$avgMonthPayment" class="list-group-item"><b>{_segment.fields.avg_month_payment}:</b> {$avgMonthPayment|price}</li>
         <li n:ifset="$avgSubscriptionPayments" class="list-group-item"><b>{_segment.fields.avg_subscription_payment}:</b> {$avgSubscriptionPayments|number:2}</li>
         <li n:ifset="$avgProductPayments" class="list-group-item"><b>{_segment.fields.avg_product_payment}:</b> {$avgProductPayments|number:2}</li>
       </ul>
