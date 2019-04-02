@@ -22,7 +22,7 @@ class SegmentFactory
     {
         $segmentRow = $this->segmentsRepository->findBy('code', $segmentIdentifier);
         if (!$segmentRow) {
-            throw new UnexpectedValueException("Segment $segmentIdentifier doesnt exists");
+            throw new UnexpectedValueException("segment does not exist: {$segmentIdentifier}");
         }
         $query = new SegmentQuery($segmentRow->query_string, $segmentRow->table_name, $segmentRow->fields);
         $segment = new Segment($this->context, $query);
