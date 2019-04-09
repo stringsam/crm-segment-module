@@ -114,6 +114,21 @@ class StoredSegmentsPresenter extends AdminPresenter
                 $average = $this->database->query($query)->fetch();
                 $this->template->avgProductPayments = $average->avg_product_payment;
             }
+        } elseif (in_array($segmentRow->table_name, ['subscriptions', 'payments'])) {
+            $tableData = [];
+            $displayFields = false;
+
+            $segment->process(function ($row) use ($data, &$tableData, &$displayFields) {
+                if ($data) {
+                    if (!$displayFields) {
+                        $displayFields = array_keys((array) $row);
+                    }
+                    $tableData[] = array_values((array) $row);
+                }
+            }, 100000);
+
+            $this->template->fields = $displayFields;
+            $this->template->data = $tableData;
         }
     }
 

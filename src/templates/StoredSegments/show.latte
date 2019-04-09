@@ -97,7 +97,11 @@
         <tr n:foreach="$data as $row">
           <td n:foreach="$row as $key => $value">
             {if $key == 'id'} {* hack pre userov - zatial ine segmenty nemame *}
-              <a n:href=":Users:UsersAdmin:show id => $value">{$value}</a>
+              {if $segment->table_name == 'users'}
+                <a n:href=":Users:UsersAdmin:show id => $value">{$value}</a>
+               {else}
+                {$value}
+              {/if}
             {else}
               {$value}
             {/if}
