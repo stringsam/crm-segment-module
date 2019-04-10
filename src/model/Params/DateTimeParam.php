@@ -90,16 +90,11 @@ class DateTimeParam extends BaseParam
                 $expression = 'NOW()';
             } else {
                 $value = intval($interval['value']);
-                if ($value >= 0 && !$key2) {
+                if ($value >= 0) {
                     $intervalOperator = "+";
-                } elseif ($value < 0 && !$key2) {
+                } else {
                     $intervalOperator = "-";
                     $value = -$value;
-                } elseif ($value < 0 && $key2) {
-                    $intervalOperator = "-";
-                    $value = -$value;
-                } elseif ($value >= 0 && $key2) {
-                    $intervalOperator = "+";
                 }
                 $expression = " NOW() {$intervalOperator} INTERVAL {$value} {$unit}";
             }
