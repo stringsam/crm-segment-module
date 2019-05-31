@@ -11,6 +11,11 @@ class StringParam extends BaseParam
         return "'" . addslashes($this->data) . "'";
     }
 
+    public function unSecureString(): string
+    {
+        return $this->data;
+    }
+
     public function isValid($data): Validation
     {
         $result = is_string($data);
