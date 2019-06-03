@@ -11,7 +11,7 @@ class StringParam extends BaseParam
         return "'" . addslashes($this->data) . "'";
     }
 
-    public function unSecureString(): string
+    public function rawString(): string
     {
         return $this->data;
     }
