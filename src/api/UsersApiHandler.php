@@ -59,9 +59,9 @@ class UsersApiHandler extends ApiHandler
                  'id' => strval($row->id),
                  'email' => $row->email,
              ];
-        });
+        }, 0);
 
-        $response = new JsonResponse(['status' => 'ok', 'users' => $users]);
+        $response = new JsonResponse(['status' => 'ok', 'users' => $users, 'memory' => memory_get_usage(true)]);
         $response->setHttpCode(Response::S200_OK);
 
         return $response;
