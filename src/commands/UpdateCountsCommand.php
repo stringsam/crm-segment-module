@@ -9,6 +9,7 @@ use Nette\Utils\DateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tracy\Debugger;
 
 class UpdateCountsCommand extends Command
 {
@@ -54,16 +55,25 @@ class UpdateCountsCommand extends Command
         $output->writeln('');
 
         foreach ($this->segmentsRepository->all() as $segmentRow) {
-            $output->write("Updating count for segment <info>{$segmentRow->code}</info>: ");
             $startTime = microtime(true);
-            $segment = $this->segmentFactory->buildSegment($segmentRow->code);
-            $count = $segment->totalCount();
-            $endTime = microtime(true);
-            $this->segmentsRepository->update($segmentRow, ['cache_count' => $count]);
+            $endTime = null;
+            try {
+                $output->write("Updating count for segment <info>{$segmentRow->code}</info>: ");
+                $segment = $this->segmentFactory->buildSegment($segmentRow->code);
+                $count = $segment->totalCount();
+                $endTime = microtime(true);
+                $this->segmentsRepository->update($segmentRow, ['cache_count' => $count]);
 
-            $this->segmentsValuesRepository->add($segmentRow, new DateTime(), $count);
+                $this->segmentsValuesRepository->add($segmentRow, new DateTime(), $count);
 
-            $output->writeln("OK (" . round($endTime - $startTime, 2) . "s)");
+                $output->writeln("OK (" . round($endTime - $startTime, 2) . "s)");
+            } catch (\Exception $e) {
+                if (!isset($endTime)) {
+                    $endTime = microtime(true);
+                }
+                Debugger::log($e, Debugger::EXCEPTION);
+                $output->writeln("ERR (" . round($endTime - $startTime, 2) . "s): " . $e->getMessage());
+            }
         }
     }
 }
