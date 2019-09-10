@@ -9,6 +9,6 @@ class AddDateIndexToSegmentsValues extends AbstractMigration
     {
         $this->table('segments_values')
             ->addIndex('date')
-            ->save();
+            ->update();
     }
 }
