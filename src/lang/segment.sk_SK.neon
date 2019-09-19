@@ -7,6 +7,7 @@ back_to_detail: spať na detail
 messages:
 	segment_was_created: Segment bol vytvorený.
 	segment_was_updated: Segment bol upravený.
+	segment_was_deleted: Segment bol zmazaný.
 	segment_not_found: Segment sa nenašiel.
 
 fields:
@@ -14,6 +15,7 @@ fields:
 	code: Identifikátor
 	created: Vytvorený
 	updated: Upravený
+	deleted: Zmazaný
 	table_name: Zdrojová tabuľka
 	rows: "Počet (približne)"
 	rows_help: "Nezobrazuje presné dáta. Číslo sa aktualizuje v pravidelných intervaloch."
@@ -39,6 +41,7 @@ placeholder:
 
 default:
 	header: Segmenty
+	deleted_segments: Zmazané segmenty
 
 show:
 	header: Segment %name%

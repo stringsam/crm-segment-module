@@ -18,7 +18,12 @@ class SegmentsRepository extends Repository
 
     public function all()
     {
-        return $this->getTable()->order('name ASC');
+        return $this->getTable()->where('deleted_at IS NULL')->order('name ASC');
+    }
+
+    public function deleted()
+    {
+        return $this->getTable()->where('deleted_at IS NOT NULL')->order('name ASC');
     }
 
     public function add($name, $version, $code, $tableName, $fields, $queryString, IRow $group, $criteria = null)
@@ -47,11 +52,24 @@ class SegmentsRepository extends Repository
 
     public function exists($code)
     {
-        return $this->getTable()->where('code', $code)->count('*') > 0;
+        return $this->all()->where('code', $code)->count('*') > 0;
+    }
+
+    public function findById($id)
+    {
+        return $this->all()->where('id', $id)->limit(1)->fetch();
     }
 
     public function findByCode($code)
     {
-        return $this->getTable()->where('code', $code)->limit(1)->fetch();
+        return $this->all()->where('code', $code)->limit(1)->fetch();
+    }
+
+    public function softDelete(IRow $segment)
+    {
+        $this->update($segment, [
+            'deleted_at' => new \DateTime(),
+            'updated_at' => new \DateTime(),
+        ]);
     }
 }

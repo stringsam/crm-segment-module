@@ -20,9 +20,9 @@
         <tr>
           <th>{_segment.fields.name}</th>
           <th>{_segment.fields.code}</th>
+          <th>{_segment.fields.table_name}</th>
           <th>{_segment.fields.version}</th>
           <th>{_segment.fields.created}</th>
-          <th>{_segment.fields.table_name}</th>
           <th>{_segment.fields.rows} {_('segment.fields.rows_help')|helpIcon|noescape}</th>
           <th>{_system.actions}</th>
         </tr>
@@ -36,14 +36,15 @@
                 </a>
               </td>
               <td><code>{$segment->code}</code></td>
+              <td>{$segment->table_name}</td>
               <td><span class="label label-default">{$segment->version}</span></td>
               <td>{$segment->created_at|userDate}</td>
-              <td>{$segment->table_name}</td>
               <td>~{$segment->cache_count}</td>
               <td>
                 <p class="text-nowrap">
                   <a n:href="show $segment->id" class="btn btn-sm btn-info" title="{_system.show}"><i class="fa fa-eye"></i> </a>
                   <a n:href="edit $segment->id" class="btn btn-sm btn-primary" title="{_system.edit}"><i class="fa fa-edit"></i> </a>
+                  <a n:href="delete! $segment->id" class="btn btn-sm btn-danger" title="{_system.delete}"><i class="fa fa-trash"></i> </a>
                 </p>
               </td>
             </tr>
@@ -53,5 +54,32 @@
     </div>
   {/foreach}
 
-
-</div>
+  {if count($deletedSegments) > 0}
+  <div class="col-md-12">
+    <h3>{_segment.default.deleted_segments}</h3>
+    <table class="table table-striped table-hover table-bordered">
+      <thead>
+      <tr>
+        <th>{_segment.fields.name}</th>
+        <th>{_segment.fields.code}</th>
+        <th>{_segment.fields.table_name}</th>
+        <th>{_segment.fields.version}</th>
+        <th>{_segment.fields.created}</th>
+        <th>{_segment.fields.deleted}</th>
+      </tr>
+      </thead>
+      <tbody>
+      {foreach $deletedSegments as $segment}
+        <tr class="inactive">
+          <td>{$segment->name}</td>
+          <td><code>{$segment->code}</code></td>
+          <td>{$segment->table_name}</td>
+          <td><span class="label label-default">{$segment->version}</span></td>
+          <td>{$segment->created_at|userDate}</td>
+          <td>{$segment->deleted_at|userDate}</td>
+        </tr>
+      {/foreach}
+      </tbody>
+    </table>
+  </div>
+  {/if}

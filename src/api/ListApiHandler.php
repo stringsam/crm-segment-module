@@ -44,14 +44,14 @@ class ListApiHandler extends ApiHandler
         }
         $params = $paramsProcessor->getValues();
 
-        $table = $this->segmentsRepository->getTable();
+        $query = $this->segmentsRepository->all();
         if (isset($params['group_id'])) {
-            $table = $table->where(['segment_group_id' => $params['group_id']]);
+            $query = $query->where(['segment_group_id' => $params['group_id']]);
         }
 
         $segments = [];
         /** @var ActiveRow $segment */
-        foreach ($table->fetchAll() as $segment) {
+        foreach ($query->fetchAll() as $segment) {
             if ($segment->table_name != 'users') {
                 continue;
             }

@@ -102,7 +102,7 @@ class CreateOrUpdateSegmentHandler extends ApiHandler
         $params['criteria'] = JSON::encode($params['criteria']);
 
         if (isset($params['id'])) {
-            $segment = $this->segmentsRepository->find($params['id']);
+            $segment = $this->segmentsRepository->findById($params['id']);
             if (!$segment) {
                 $response = new JsonResponse(['status' => 'error', 'message' => 'Segment not found']);
                 $response->setHttpCode(Response::S404_NOT_FOUND);

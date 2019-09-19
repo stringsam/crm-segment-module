@@ -7,6 +7,7 @@ back_to_detail: back to detail
 messages:
 	segment_was_created: Segment was created.
 	segment_was_updated: Segment was updated.
+	segment_was_deleted: Segment bol deleted.
 	segment_not_found: Segment not found.
 
 fields:
@@ -14,6 +15,7 @@ fields:
 	code: Identifier
 	created: Created
 	updated: Updated
+	deleted: Deleted
 	table_name: Source table
 	rows: "Count (approx)"
 	rows_help: "Doesn't contain accurate data. Actualized in periodical intervals."
@@ -39,6 +41,7 @@ placeholder:
 
 default:
 	header: Segments
+	deleted_segments: Deleted segments
 
 show:
 	header: Segment %name%

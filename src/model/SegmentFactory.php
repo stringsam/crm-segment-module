@@ -20,7 +20,7 @@ class SegmentFactory
 
     public function buildSegment($segmentIdentifier)
     {
-        $segmentRow = $this->segmentsRepository->findBy('code', $segmentIdentifier);
+        $segmentRow = $this->segmentsRepository->findByCode($segmentIdentifier);
         if (!$segmentRow) {
             throw new UnexpectedValueException("segment does not exist: {$segmentIdentifier}");
         }

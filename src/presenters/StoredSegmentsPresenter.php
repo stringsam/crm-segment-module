@@ -58,6 +58,7 @@ class StoredSegmentsPresenter extends AdminPresenter
     {
         $this->template->segmentGroups = $this->segmentGroupsRepository->all();
         $this->template->segments = $this->segmentsRepository->all();
+        $this->template->deletedSegments = $this->segmentsRepository->deleted();
     }
 
     public function renderNew($version = 2)
@@ -233,5 +234,14 @@ class StoredSegmentsPresenter extends AdminPresenter
 
         $segment = $this->segmentsRepository->find($id);
         $this->template->segment = $segment;
+    }
+
+    public function handleDelete($segmentId)
+    {
+        $segment = $this->segmentsRepository->find($segmentId);
+        $this->segmentsRepository->softDelete($segment);
+
+        $this->flashMessage($this->translator->translate('segment.messages.segment_was_deleted'));
+        $this->redirect('default');
     }
 }

@@ -39,7 +39,7 @@ class ShowSegmentHandler extends ApiHandler
         $params = $paramsProcessor->getValues();
 
         $segment = $this->segmentsRepository->find($params['id']);
-        if (!$segment) {
+        if (!$segment || $segment->deleted_at !== null) {
             $response = new JsonResponse(['status' => 'error', 'message' => 'Segment not found']);
             $response->setHttpCode(Response::S404_NOT_FOUND);
             return $response;
