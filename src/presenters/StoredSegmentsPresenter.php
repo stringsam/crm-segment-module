@@ -10,6 +10,7 @@ use Crm\ApplicationModule\Graphs\GraphDataItem;
 use Crm\SegmentModule\Forms\SegmentFormFactory;
 use Crm\SegmentModule\Repository\SegmentGroupsRepository;
 use Crm\SegmentModule\Repository\SegmentsRepository;
+use Crm\SegmentModule\Repository\SegmentsValuesRepository;
 use Crm\SegmentModule\SegmentFactory;
 use Crm\UsersModule\Auth\Access\AccessToken;
 use Nette\Application\Responses\FileResponse;
@@ -21,6 +22,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class StoredSegmentsPresenter extends AdminPresenter
 {
     private $segmentsRepository;
+
+    private $segmentsValuesRepository;
 
     private $segmentFactory;
 
@@ -36,6 +39,7 @@ class StoredSegmentsPresenter extends AdminPresenter
 
     public function __construct(
         SegmentsRepository $segmentsRepository,
+        SegmentsValuesRepository $segmentsValuesRepository,
         SegmentFactory $segmentFactory,
         SegmentFormFactory $segmentFormFactory,
         ExcelFactory $excelFactory,
@@ -46,6 +50,7 @@ class StoredSegmentsPresenter extends AdminPresenter
         parent::__construct();
 
         $this->segmentsRepository = $segmentsRepository;
+        $this->segmentsValuesRepository = $segmentsValuesRepository;
         $this->segmentFactory = $segmentFactory;
         $this->segmentFormFactory = $segmentFormFactory;
         $this->excelFactory = $excelFactory;
@@ -130,6 +135,28 @@ class StoredSegmentsPresenter extends AdminPresenter
 
             $this->template->fields = $displayFields;
             $this->template->data = $tableData;
+        }
+    }
+
+    public function handleRecalculate(int $id)
+    {
+        // load segment
+        $segmentRow = $this->loadSegment($id);
+        $segment = $this->segmentFactory->buildSegment($segmentRow->code);
+
+        // store cached count
+        $count = $segment->totalCount();
+        $this->segmentsValuesRepository->cacheSegmentCount($segmentRow, $count);
+
+        $this->presenter->flashMessage($this->translator->translate('segment.messages.segment_count_recalculated'));
+
+        // reload snippet / page
+        if ($this->isAjax()) {
+            $this->template->segment = $segmentRow;
+            $this->template->recalculated = true;
+            $this->redrawControl('segmentCount');
+        } else {
+            $this->redirect("show", $id);
         }
     }
 

@@ -5,7 +5,6 @@ namespace Crm\SegmentModule\Commands;
 use Crm\SegmentModule\Repository\SegmentsRepository;
 use Crm\SegmentModule\Repository\SegmentsValuesRepository;
 use Crm\SegmentModule\SegmentFactory;
-use Nette\Utils\DateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -62,9 +61,8 @@ class UpdateCountsCommand extends Command
                 $segment = $this->segmentFactory->buildSegment($segmentRow->code);
                 $count = $segment->totalCount();
                 $endTime = microtime(true);
-                $this->segmentsRepository->update($segmentRow, ['cache_count' => $count]);
 
-                $this->segmentsValuesRepository->add($segmentRow, new DateTime(), $count);
+                $this->segmentsValuesRepository->cacheSegmentCount($segmentRow, $count);
 
                 $output->writeln("OK (" . round($endTime - $startTime, 2) . "s)");
             } catch (\Exception $e) {

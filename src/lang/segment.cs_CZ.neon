@@ -9,6 +9,8 @@ messages:
 	segment_was_updated: Segment byl upraven.
 	segment_was_deleted: Segment byl smazaný.
 	segment_not_found: Segment nebyl nalezen.
+	segment_count_recalculated: Segment byl přepočítan
+
 fields:
 	name: Název
 	code: Identifikátor
@@ -42,6 +44,7 @@ show:
 	edit: Uprav segment
 	basic_info: Základní info
 	show_data: Zobraz data
+	recalculate_total_count: Aktualizovat počet
 	export: Export
 	no_data: Segment neobsahuje žádná data
 	stats: Statistiky

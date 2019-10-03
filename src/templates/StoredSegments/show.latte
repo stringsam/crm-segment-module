@@ -45,7 +45,20 @@
     <div class="panel panel-default">
       <div class="panel-heading">{_segment.show.stats}</div>
       <ul class="list-group">
-          <li class="list-group-item"><b>{_segment.fields.rows}:</b> ~{$segment->cache_count} {_('segment.fields.rows_help')|helpIcon|noescape}</li>
+          <li class="list-group-item">
+            {snippet segmentCount}
+            <b>{_segment.fields.rows}:</b> ~{$segment->cache_count} {_('segment.fields.rows_help')|helpIcon|noescape}
+            {if !isset($recalculated) || !$recalculated}
+              <a n:href="recalculate! $segment->id" class="ajax btn btn-sm btn-default">
+                <i class="fa fa-sync-alt"></i>&nbsp;{_segment.show.recalculate_total_count}
+              </a>
+            {else}
+              <a class="ajax btn btn-sm btn-default" disabled="disabled">
+                <i class="fa fa-sync-alt"></i>&nbsp;{_segment.messages.segment_count_recalculated}
+              </a>
+            {/if}
+            {/snippet}
+          </li>
         <li n:ifset="$avgMonthPayment" class="list-group-item"><b>{_segment.fields.avg_month_payment}:</b> {$avgMonthPayment|price}</li>
         <li n:ifset="$avgSubscriptionPayments" class="list-group-item"><b>{_segment.fields.avg_subscription_payment}:</b> {$avgSubscriptionPayments|number:2}</li>
         <li n:ifset="$avgProductPayments" class="list-group-item"><b>{_segment.fields.avg_product_payment}:</b> {$avgProductPayments|number:2}</li>

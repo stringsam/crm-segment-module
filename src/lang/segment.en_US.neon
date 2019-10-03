@@ -7,8 +7,9 @@ back_to_detail: back to detail
 messages:
 	segment_was_created: Segment was created.
 	segment_was_updated: Segment was updated.
-	segment_was_deleted: Segment bol deleted.
+	segment_was_deleted: Segment was deleted.
 	segment_not_found: Segment not found.
+	segment_count_recalculated: Segment count was recalculated
 
 fields:
 	name: Name
@@ -48,6 +49,7 @@ show:
 	edit: Edit segment
 	basic_info: Basic info
 	show_data: Show data
+	recalculate_total_count: Refresh count
 	export: Export
 	no_data: Segment doens't contains any data
 	stats: Stats
