@@ -2,10 +2,11 @@
 
 namespace Crm\SegmentModule\Params;
 
+use Crm\ApplicationModule\Criteria\CriteriaParam;
 use Crm\SegmentModule\Criteria\InvalidCriteriaException;
 use Nette\Utils\DateTime;
 
-abstract class BaseParam
+abstract class BaseParam implements CriteriaParam
 {
     protected $type;
 
