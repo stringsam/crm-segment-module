@@ -41,5 +41,7 @@ class ProcessCriteriaSegmentsCommand extends Command
         }
 
         $output->writeln("Done");
+
+        return 0;
     }
 }
