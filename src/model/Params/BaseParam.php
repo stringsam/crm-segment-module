@@ -59,7 +59,7 @@ abstract class BaseParam implements CriteriaParam
         return $this->help;
     }
 
-    public function label()
+    public function label(): string
     {
         return $this->label;
     }
