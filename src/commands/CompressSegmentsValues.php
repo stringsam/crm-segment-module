@@ -51,18 +51,18 @@ class CompressSegmentsValues extends Command
         $from = DateTime::createFromFormat('Y-m-d', $fromString)->setTime(0, 0, 0, 0);
         if (! $from) {
             $output->writeln("$fromString is not a valid date, accepted format is YYYY-MM-DD.");
-            return;
+            return 1;
         }
 
         $toString = $input->getOption('to');
         if (! $toString) {
             $output->writeln('Required option --to=DATE is missing');
-            return;
+            return 1;
         }
         $to = DateTime::createFromFormat('Y-m-d', $toString)->setTime(0, 0, 0, 0);
         if (! $to) {
             $output->writeln("$toString is not a valid date, accepted format is YYYY-MM-DD.");
-            return;
+            return 1;
         }
 
         $oneDay = DateInterval::createFromDateString('1 day');
@@ -77,6 +77,8 @@ class CompressSegmentsValues extends Command
         }
 
         $output->writeln("Compressing finished, $totalDeleted record(s) deleted.");
+
+        return 0;
     }
 
     private function compress(DateTime $day, OutputInterface $output): int
