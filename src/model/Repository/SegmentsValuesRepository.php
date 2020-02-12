@@ -37,6 +37,15 @@ class SegmentsValuesRepository extends Repository
             ->where('segment.code', $code);
     }
 
+    public function mostRecentValues($segmentCode)
+    {
+        return $this->valuesBySegmentCode($segmentCode)
+            ->order('date DESC')
+            ->limit(1)
+            ->select('*')
+            ->fetch();
+    }
+
     public function cacheSegmentCount(ActiveRow $segment, int $count)
     {
         $this->segmentsRepository->update($segment, ['cache_count' => $count]);
