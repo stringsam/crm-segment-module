@@ -3,9 +3,10 @@ services:
 		setup:
 			- addModule(Crm\SegmentModule\SegmentModule())
 
-	- Crm\SegmentModule\Repository\SegmentsRepository
-	- Crm\SegmentModule\Repository\SegmentGroupsRepository
-	- Crm\SegmentModule\Repository\SegmentsValuesRepository
+	segmentsRepository: Crm\SegmentModule\Repository\SegmentsRepository
+	segmentGroupsRepository: Crm\SegmentModule\Repository\SegmentGroupsRepository
+	segmentsValuesRepository: Crm\SegmentModule\Repository\SegmentsValuesRepository
+
 	- Crm\SegmentModule\SegmentFactory
 	- Crm\SegmentModule\Commands\UpdateCountsCommand
 	- Crm\SegmentModule\Commands\ProcessCriteriaSegmentsCommand
