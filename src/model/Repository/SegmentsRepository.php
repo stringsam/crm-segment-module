@@ -16,17 +16,17 @@ class SegmentsRepository extends Repository
         parent::__construct($database);
     }
 
-    public function all()
+    final public function all()
     {
         return $this->getTable()->where('deleted_at IS NULL')->order('name ASC');
     }
 
-    public function deleted()
+    final public function deleted()
     {
         return $this->getTable()->where('deleted_at IS NOT NULL')->order('name ASC');
     }
 
-    public function add($name, $version, $code, $tableName, $fields, $queryString, IRow $group, $criteria = null)
+    final public function add($name, $version, $code, $tableName, $fields, $queryString, IRow $group, $criteria = null)
     {
         $id = $this->insert([
             'name' => $name,
@@ -44,28 +44,28 @@ class SegmentsRepository extends Repository
         return $this->find($id);
     }
 
-    public function update(IRow &$row, $data)
+    final public function update(IRow &$row, $data)
     {
         $data['updated_at'] = new DateTime();
         return parent::update($row, $data);
     }
 
-    public function exists($code)
+    final public function exists($code)
     {
         return $this->all()->where('code', $code)->count('*') > 0;
     }
 
-    public function findById($id)
+    final public function findById($id)
     {
         return $this->all()->where('id', $id)->limit(1)->fetch();
     }
 
-    public function findByCode($code)
+    final public function findByCode($code)
     {
         return $this->all()->where('code', $code)->limit(1)->fetch();
     }
 
-    public function softDelete(IRow $segment)
+    final public function softDelete(IRow $segment)
     {
         $this->update($segment, [
             'deleted_at' => new \DateTime(),

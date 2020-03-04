@@ -22,7 +22,7 @@ class SegmentsValuesRepository extends Repository
         $this->segmentsRepository = $segmentsRepository;
     }
 
-    public function add(IRow $segment, $date, $value)
+    final public function add(IRow $segment, $date, $value)
     {
         return $this->insert([
             'segment_id' => $segment->id,
@@ -31,13 +31,13 @@ class SegmentsValuesRepository extends Repository
         ]);
     }
 
-    public function valuesBySegmentCode($code)
+    final public function valuesBySegmentCode($code)
     {
         return $this->getTable()
             ->where('segment.code', $code);
     }
 
-    public function mostRecentValues($segmentCode)
+    final public function mostRecentValues($segmentCode)
     {
         return $this->valuesBySegmentCode($segmentCode)
             ->order('date DESC')
@@ -46,7 +46,7 @@ class SegmentsValuesRepository extends Repository
             ->fetch();
     }
 
-    public function cacheSegmentCount(ActiveRow $segment, int $count)
+    final public function cacheSegmentCount(ActiveRow $segment, int $count)
     {
         $this->segmentsRepository->update($segment, ['cache_count' => $count]);
         $this->add($segment, new DateTime(), $count);
